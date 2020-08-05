@@ -2,6 +2,7 @@ import glob
 import concurrent.futures
 import re
 import csv
+import os
 from Features.ScanpathFeatures import extract_scanpath_feature, Scanpath_Feature_Names
 
 
@@ -33,11 +34,15 @@ class Features:
                 except Exception as exc:
                     print("Error occured: ", exc)
 
-        print("scanpath_featurelen", len(extracted_features))
+        #  check if csv file exisits
+        flchk = os.path.isfile(dir_to_save)
+
+        print("scanpath_featurelen", len(extracted_features))  # debug
         if len(extracted_features) > 0:
             with open(dir_to_save, 'a', newline='') as result_file:
                 write_row = csv.writer(result_file, dialect='excel')
-                write_row.writerow(Scanpath_Feature_Names)
+                if not flchk:
+                    write_row.writerow(Scanpath_Feature_Names)
                 for scanpaths in extracted_features:
                     # write_row.writerow(scanpaths)
                     for scanpath in scanpaths:
@@ -53,6 +58,6 @@ def key_func(x):
 
 
 if __name__ == "__main__":
-    feature = Features("D:/TrainingDataset_YEAR_PROJECT/TrainingData/ASD", "D:/TrainingDataset_YEAR_PROJECT"
-                                                                           "/TrainingData/Images")
-    feature.extract_scanpath_features_train("ASD", "D:/TrainingDataset_YEAR_PROJECT/TrainingSet.csv")
+    feature = Features(scanpaths_dir="D:/TrainingDataset_YEAR_PROJECT/TrainingData/TD", images_dir=
+    "D:/TrainingDataset_YEAR_PROJECT/TrainingData/Images")
+    feature.extract_scanpath_features_train("TD", "D:/TrainingDataset_YEAR_PROJECT/TrainingSet.csv")
