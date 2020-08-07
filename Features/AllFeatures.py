@@ -58,6 +58,7 @@ def key_func(x):
 
 
 if __name__ == "__main__":
-    feature = Features(scanpaths_dir="D:/TrainingDataset_YEAR_PROJECT/TrainingData/TD", images_dir=
-    "D:/TrainingDataset_YEAR_PROJECT/TrainingData/Images")
-    feature.extract_scanpath_features_train("TD", "D:/TrainingDataset_YEAR_PROJECT/TrainingSet.csv")
+    label = "TD"
+    feature = Features(scanpaths_dir="D:/TrainingDataset_YEAR_PROJECT/TrainingData_1/{}".format(label),
+                       images_dir="D:/TrainingDataset_YEAR_PROJECT/TrainingData/Images")
+    feature.extract_scanpath_features_train(label, "D:/TrainingDataset_YEAR_PROJECT/TrainingSet.csv")
