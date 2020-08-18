@@ -1,5 +1,7 @@
 import numpy as np
 from collections import Counter
+import pandas as pd
+from Classifiers import Utils
 
 
 # store info about tree node
@@ -12,10 +14,11 @@ class TreeNode:
         self.value = value
 
     def is_leaf_node(self):
-        if self.value is not None:
-            return True
-        else:
-            return False
+        # if self.value is not None:
+        #     return True
+        # else:
+        #     return False
+        return self.value is not None
 
 
 class DecisionTree:
@@ -59,6 +62,8 @@ class DecisionTree:
         predictions = []
         for i in x:
             predictions.append(self.traverse_tree(i, self.root))
+
+        return predictions
 
     def traverse_tree(self, sample, node):
         if node.is_leaf_node():
@@ -148,4 +153,22 @@ def calculate_best_criteria(x, y, feature_indices):
 
 
 if __name__ == "__main__":
-    pass
+    df = pd.read_csv("D:/TrainingDataset_YEAR_PROJECT/TrainingSet.csv")
+
+    # replace labels
+    df['feature_class'].replace({'ASD': 0, 'TD': 1}, inplace=True)
+
+    X_train, X_test, y_train, y_test = Utils.train_test_split(df, 0.2)
+
+    X_train = X_train.values
+    X_test = X_test.values
+    y_train = y_train.values
+    y_test = y_test.values
+
+    decision_tree = DecisionTree(max_depth=10)
+    decision_tree.fit(X_train, y_train)
+
+    y_pred = decision_tree.predict(X_test)
+
+    accuracy_score = Utils.calc_accuracy_score(y_test, y_pred)
+    print("Accuracy: ", accuracy_score)

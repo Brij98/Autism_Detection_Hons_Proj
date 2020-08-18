@@ -19,7 +19,7 @@ def train_svm_model(fl_dir):
     #  X_train, X_test, Y_train, Y_test = SupportVectorMachine.proc_CSV_data(fl_dir)
     dataframe = pd.read_csv(fl_dir)
     dataframe["feature_class"]. \
-        replace({"ASD": -1.0, "TD": 1.0},
+        replace({"ASD": 0, "TD": 1},
                 inplace=True)
     dataframe = dataframe.sample(frac=1)
     X = dataframe.drop(labels="feature_class", axis=1)
@@ -97,20 +97,20 @@ def train_svm_model(fl_dir):
     # pyplot.show()
 
     # RANDOM FOREST CLASSIFIER
-    # ns_probs = [0 for _ in range(len(Y_test))]
-    # regressor = RandomForestClassifier(n_estimators=200, max_leaf_nodes=5,max_depth=12).fit(X_train, Y_train)
-    # y_pred = regressor.predict(X_test)
-    #
-    # print(confusion_matrix(Y_test, y_pred))
-    # print(classification_report(Y_test, y_pred))
-    # # print(Y_test)
-    # # print(y_pred)
-    # print(SupportVectorMachine.calc_accuracy_score(Y_test, y_pred))
-    #
-    # accuracy = regressor.score(X_test, Y_test)
-    # print(accuracy)  # debug
-    #
-    # print(accuracy_score(Y_test, y_pred.round(), normalize=False))
+    ns_probs = [0 for _ in range(len(Y_test))]
+    regressor = RandomForestClassifier(n_estimators=18, max_depth=10).fit(X_train, Y_train)
+    y_pred = regressor.predict(X_test)
+
+    print(confusion_matrix(Y_test, y_pred))
+    print(classification_report(Y_test, y_pred))
+    # print(Y_test)
+    # print(y_pred)
+    print(SupportVectorMachine.calc_accuracy_score(Y_test, y_pred))
+
+    accuracy = regressor.score(X_test, Y_test)
+    print(accuracy)  # debug
+
+    print(accuracy_score(Y_test, y_pred.round(), normalize=False))
 
     # NN..............................................................
     # mlp = MLPClassifier(hidden_layer_sizes=(13, 13, 13), max_iter=100).fit(X_train, Y_train)

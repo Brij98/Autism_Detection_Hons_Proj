@@ -51,11 +51,11 @@ def proc_CSV_data(fl_dir):
 
     # normalizing the  Data
     scalar = MinMaxScaler()
-    x_train = pd.DataFrame(scalar.fit_transform(x_train.values))
-    x_test = pd.DataFrame(scalar.transform(x_test.values))
+    # x_train = pd.DataFrame(scalar.fit_transform(x_train.values))
+    # x_test = pd.DataFrame(scalar.transform(x_test.values))
 
-    # x_train.insert(loc=len(x_train.columns), column='intercept', value=1)
-    # x_test.insert(loc=len(x_test.columns), column='intercept', value=1)
+    x_train.insert(loc=len(x_train.columns), column='intercept', value=1)
+    x_test.insert(loc=len(x_test.columns), column='intercept', value=1)
 
     return x_train, x_test, y_train, y_test
 
