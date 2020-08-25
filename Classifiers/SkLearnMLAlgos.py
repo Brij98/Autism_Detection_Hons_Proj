@@ -14,6 +14,8 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.svm import SVC, LinearSVC
 from Classifiers import SupportVectorMachine
 
+from sklearn.preprocessing import MinMaxScaler
+
 
 def train_svm_model(fl_dir):
     #  X_train, X_test, Y_train, Y_test = SupportVectorMachine.proc_CSV_data(fl_dir)
@@ -50,8 +52,13 @@ def train_svm_model(fl_dir):
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.20)
 
     #  SVM
+
+    # scalar = MinMaxScaler()
+    # X_train = pd.DataFrame(scalar.fit_transform(X_train.values))
+    # X_test = pd.DataFrame(scalar.transform(X_test.values))
+
     # ns_probs = [0 for _ in range(len(Y_test))]
-    # svm_model_linear = SVC(kernel='rbf', C=0.01, probability=True).fit(X_train, Y_train)  # polynomial kernel
+    # svm_model_linear = SVC(kernel='linear', C=1.0, probability=True).fit(X_train, Y_train)  # polynomial kernel
     #
     # # load the saved model
     # # load_model = joblib.load(filename=saved_mdl_path)
@@ -97,6 +104,10 @@ def train_svm_model(fl_dir):
     # pyplot.show()
 
     # RANDOM FOREST CLASSIFIER
+    scalar = MinMaxScaler()
+    X_train = pd.DataFrame(scalar.fit_transform(X_train.values))
+    X_test = pd.DataFrame(scalar.transform(X_test.values))
+
     ns_probs = [0 for _ in range(len(Y_test))]
     regressor = RandomForestClassifier(n_estimators=18, max_depth=10).fit(X_train, Y_train)
     y_pred = regressor.predict(X_test)
@@ -113,7 +124,7 @@ def train_svm_model(fl_dir):
     print(accuracy_score(Y_test, y_pred.round(), normalize=False))
 
     # NN..............................................................
-    # mlp = MLPClassifier(hidden_layer_sizes=(13, 13, 13), max_iter=100).fit(X_train, Y_train)
+    # mlp = MLPClassifier(hidden_layer_sizes=(7, 7, 7)).fit(X_train, Y_train)
     #
     # predictions = mlp.predict(X_test)
     # print(confusion_matrix(Y_test, predictions))
@@ -121,16 +132,49 @@ def train_svm_model(fl_dir):
     # print(SupportVectorMachine.calc_accuracy_score(Y_test, predictions))
 
     # KNN
-    # model = KNeighborsClassifier(n_neighbors=200 ).fit(X_train, Y_train)
-    # kmdl = model.predict(X_test)
+    # scalar = MinMaxScaler()
+    # X_train = pd.DataFrame(scalar.fit_transform(X_train.values))
+    # X_test = pd.DataFrame(scalar.transform(X_test.values))
+
+    # model = KNeighborsClassifier(n_neighbors=11).fit(X_train, Y_train)
+    # y_pred = model.predict(X_test)
     # #
+    # accuracy = model.score(X_test, Y_test)
+    # print(accuracy)  # debug
+    #
+    # print(confusion_matrix(Y_test, y_pred))
+    # print(classification_report(Y_test, y_pred))
     # accuracy = model.score(X_test, Y_test)
     # print(accuracy)  # debug
 
     # Naive Bayes
+    # scalar = MinMaxScaler()
+    # X_train = pd.DataFrame(scalar.fit_transform(X_train.values))
+    # X_test = pd.DataFrame(scalar.transform(X_test.values))
     # gnb = GaussianNB()
     # y_pred = gnb.fit(X_train, Y_train).predict(X_test)
     # print(SupportVectorMachine.calc_accuracy_score(Y_test, y_pred))
+    #
+    # print(confusion_matrix(Y_test, y_pred))
+    # print(classification_report(Y_test, y_pred))
+    # accuracy = gnb.score(X_test, Y_test)
+    # print(accuracy)  # debug
+
+    # Logistic Regression
+    # scalar = MinMaxScaler()
+    # X_train = pd.DataFrame(scalar.fit_transform(X_train.values))
+    # X_test = pd.DataFrame(scalar.transform(X_test.values))
+    # logreg = LogisticRegression()
+    #
+    # # fit the model with data
+    # logreg.fit(X_train, Y_train)
+    #
+    # y_pred = logreg.predict(X_test)
+    #
+    # print(confusion_matrix(Y_test, y_pred))
+    # print(classification_report(Y_test, y_pred))
+    # accuracy = logreg.score(X_test, Y_test)
+    # print(accuracy)  # debug
 
 
 if __name__ == "__main__":

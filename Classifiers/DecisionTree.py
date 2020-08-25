@@ -170,5 +170,5 @@ if __name__ == "__main__":
 
     y_pred = decision_tree.predict(X_test)
 
-    accuracy_score = Utils.calc_accuracy_score(y_test, y_pred)
+    accuracy_score = Utils.calculate_accuracy_score(y_test, y_pred)
     print("Accuracy: ", accuracy_score)
