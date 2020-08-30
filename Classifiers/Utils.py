@@ -86,3 +86,7 @@ def normalize_dataset(df, min_max):
         df[col_name] = (df[col_name] - min_val) / (max_val - min_val)
 
     return df
+
+
+def plot_roc_curve(y_pred, y_true):
+    pass

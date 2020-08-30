@@ -3,7 +3,7 @@ import concurrent.futures
 import re
 import csv
 import os
-from Features.ScanpathFeatures import extract_scanpath_feature, Scanpath_Feature_Names
+from Features.ScanpathFeatures import extract_scanpath_feature, Scanpath_Feature_Names, calculate_scan_path_features
 
 
 class Features:
@@ -48,8 +48,12 @@ class Features:
                     for scanpath in scanpaths:
                         write_row.writerow(scanpath)
 
-    def extract_scanpath_features_test(self):
-        pass
+
+# calculate the feature values for test data
+def extract_scanpath_features_test(scan_path_list, image_size):
+    features = calculate_scan_path_features(scan_path_list, image_size)
+
+    return features
 
 
 def key_func(x):

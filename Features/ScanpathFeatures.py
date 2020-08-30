@@ -10,9 +10,15 @@ def extract_scanpath_feature(scanpath_fl, image_fl, feature_class):
     image_size = cv2.imread(image_fl).shape
     scanpath_lst = split_scanpaths(scanpath_fl=scanpath_fl)
 
+    feature_val_list = calculate_scan_path_features(scanpath_lst, image_size, feature_class, False)
+
+    return feature_val_list
+
+
+def calculate_scan_path_features(scan_path_list, image_size, feature_class=None, test=True):
     feature_val_list = []
 
-    for scanpath in scanpath_lst:
+    for scanpath in scan_path_list:
         feature_name = []
         feature_val = []
 
@@ -73,8 +79,9 @@ def extract_scanpath_feature(scanpath_fl, image_fl, feature_class):
         feature_name.append("mean_dist_mean_coord")
         feature_val.append(np.mean(avg_dist_coord))
 
-        feature_name.append("feature_class")
-        feature_val.append(feature_class)
+        if not test:
+            feature_name.append("feature_class")
+            feature_val.append(feature_class)
 
         feature_val_list.append(feature_val)
 

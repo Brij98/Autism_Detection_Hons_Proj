@@ -16,6 +16,8 @@ from Classifiers import SupportVectorMachine
 
 from sklearn.preprocessing import MinMaxScaler
 
+from Classifiers import Utils
+
 
 def train_svm_model(fl_dir):
     #  X_train, X_test, Y_train, Y_test = SupportVectorMachine.proc_CSV_data(fl_dir)
@@ -24,8 +26,12 @@ def train_svm_model(fl_dir):
         replace({"ASD": 0, "TD": 1},
                 inplace=True)
     dataframe = dataframe.sample(frac=1)
-    X = dataframe.drop(labels="feature_class", axis=1)
-    Y = dataframe['feature_class']
+
+    min_max_scalar = Utils.calculate_min_max_scalar(dataframe)
+    dataframe = Utils.normalize_dataset(dataframe, min_max_scalar)
+
+    # X = dataframe.drop(labels="feature_class", axis=1)
+    # Y = dataframe['feature_class']
 
     #  feature selection BEGIN
     # print("Shape before feature selection", X.shape)
@@ -49,16 +55,17 @@ def train_svm_model(fl_dir):
     #  feature selection END
 
     #  train test split
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.20)
+    # X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.20)
+    X_train, X_test, Y_train, Y_test = Utils.train_test_split(dataframe=dataframe, test_size=0.20)
 
     #  SVM
 
     # scalar = MinMaxScaler()
     # X_train = pd.DataFrame(scalar.fit_transform(X_train.values))
     # X_test = pd.DataFrame(scalar.transform(X_test.values))
-
+    #
     # ns_probs = [0 for _ in range(len(Y_test))]
-    # svm_model_linear = SVC(kernel='linear', C=1.0, probability=True).fit(X_train, Y_train)  # polynomial kernel
+    # svm_model_linear = SVC(kernel='rbf', C=1.0, probability=True).fit(X_train, Y_train)  # polynomial kernel
     #
     # # load the saved model
     # # load_model = joblib.load(filename=saved_mdl_path)
@@ -104,38 +111,38 @@ def train_svm_model(fl_dir):
     # pyplot.show()
 
     # RANDOM FOREST CLASSIFIER
-    scalar = MinMaxScaler()
-    X_train = pd.DataFrame(scalar.fit_transform(X_train.values))
-    X_test = pd.DataFrame(scalar.transform(X_test.values))
-
-    ns_probs = [0 for _ in range(len(Y_test))]
-    regressor = RandomForestClassifier(n_estimators=18, max_depth=10).fit(X_train, Y_train)
-    y_pred = regressor.predict(X_test)
-
-    print(confusion_matrix(Y_test, y_pred))
-    print(classification_report(Y_test, y_pred))
-    # print(Y_test)
-    # print(y_pred)
-    print(SupportVectorMachine.calc_accuracy_score(Y_test, y_pred))
-
-    accuracy = regressor.score(X_test, Y_test)
-    print(accuracy)  # debug
-
-    print(accuracy_score(Y_test, y_pred.round(), normalize=False))
+    # scalar = MinMaxScaler()
+    # X_train = pd.DataFrame(scalar.fit_transform(X_train.values))
+    # X_test = pd.DataFrame(scalar.transform(X_test.values))
+    #
+    # ns_probs = [0 for _ in range(len(Y_test))]
+    # regressor = RandomForestClassifier(n_estimators=18, max_depth=10).fit(X_train, Y_train)
+    # y_pred = regressor.predict(X_test)
+    #
+    # print(confusion_matrix(Y_test, y_pred))
+    # print(classification_report(Y_test, y_pred))
+    # # print(Y_test)
+    # # print(y_pred)
+    # print(SupportVectorMachine.calc_accuracy_score(Y_test, y_pred))
+    #
+    # accuracy = regressor.score(X_test, Y_test)
+    # print(accuracy)  # debug
+    #
+    # print(accuracy_score(Y_test, y_pred.round(), normalize=False))
 
     # NN..............................................................
-    # mlp = MLPClassifier(hidden_layer_sizes=(7, 7, 7)).fit(X_train, Y_train)
-    #
-    # predictions = mlp.predict(X_test)
-    # print(confusion_matrix(Y_test, predictions))
-    # print(classification_report(Y_test, predictions))
-    # print(SupportVectorMachine.calc_accuracy_score(Y_test, predictions))
+    mlp = MLPClassifier(hidden_layer_sizes=9, activation='relu', max_iter=400, solver='adam').fit(X_train, Y_train)
+
+    predictions = mlp.predict(X_test)
+    print(confusion_matrix(Y_test, predictions))
+    print(classification_report(Y_test, predictions))
+    print(Utils.calculate_accuracy_score(Y_test, predictions))
 
     # KNN
     # scalar = MinMaxScaler()
     # X_train = pd.DataFrame(scalar.fit_transform(X_train.values))
     # X_test = pd.DataFrame(scalar.transform(X_test.values))
-
+    #
     # model = KNeighborsClassifier(n_neighbors=11).fit(X_train, Y_train)
     # y_pred = model.predict(X_test)
     # #
@@ -153,7 +160,7 @@ def train_svm_model(fl_dir):
     # X_test = pd.DataFrame(scalar.transform(X_test.values))
     # gnb = GaussianNB()
     # y_pred = gnb.fit(X_train, Y_train).predict(X_test)
-    # print(SupportVectorMachine.calc_accuracy_score(Y_test, y_pred))
+    # # print(SupportVectorMachine.calc_accuracy_score(Y_test, y_pred))
     #
     # print(confusion_matrix(Y_test, y_pred))
     # print(classification_report(Y_test, y_pred))
