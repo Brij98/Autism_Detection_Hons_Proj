@@ -7,6 +7,7 @@ Learning_rate = 0.000001
 Reg_strength = 10000  # C
 Weights_File = 'Trained_Classifiers/SVM_Weights'
 
+
 #   SVM
 #   1/2 * ||W||^2 + C(1/N * sum(max(0, 1 - Yi * (W * Xi +b))))
 
@@ -14,32 +15,32 @@ class SupportVectorMachine:
 
     def __init__(self, training_data_dir):
         self.training_data_dir = training_data_dir
-        self.trained_weights = None
-        self.x_train = None
-        self.x_test = None
-        self.y_train = None
-        self.y_test = None
+        self.__trained_weights = None
+        self.__x_train = None
+        self.__x_test = None
+        self.__y_train = None
+        self.__y_test = None
 
         # finding the min max scalar
-        self.min_max_scalar = Utils.calculate_min_max_scalar(pd.read_csv(training_data_dir))
+        self.__min_max_scalar = Utils.calculate_min_max_scalar(pd.read_csv(training_data_dir))
 
     def train_support_vector_machine(self, save_mdl=False):
         print("Training SupportVectorMachine...")
-        self.x_train, self.x_test, self.y_train, self.y_test = process_training_data(self.training_data_dir,
-                                                                                     self.min_max_scalar)
-        self.trained_weights = stochastic_gradient_descent(self.x_train, self.y_train)
+        self.__x_train, self.__x_test, self.__y_train, self.__y_test = process_training_data(self.training_data_dir,
+                                                                                             self.__min_max_scalar)
+        self.__trained_weights = stochastic_gradient_descent(self.__x_train, self.__y_train)
 
-        print(self.trained_weights)
+        print(self.__trained_weights)
 
         print("Finished Training SupportVectorMachine")
 
         self.__test_support_vector_machine()
 
         if save_mdl is True:
-            self.save_trained_weights(Weights_File)
+            self.__save_trained_weights(Weights_File)
 
     def __test_support_vector_machine(self):
-        if self.trained_weights is not None and self.x_test is not None and self.y_test is not None:
+        if self.__trained_weights is not None and self.__x_test is not None and self.__y_test is not None:
 
             print("Testing SupportVectorMachine")
 
@@ -48,13 +49,13 @@ class SupportVectorMachine:
             # print(type(self.y_test))
 
             # for i in range(self.x_test.shape[0]):
-            for r in self.x_test.to_numpy():
-                y_predict = np.sign(np.dot(r, self.trained_weights))
+            for r in self.__x_test:
+                y_predict = np.sign(np.dot(r, self.__trained_weights))
                 y_test_predicted = np.append(y_test_predicted, y_predict)
 
-            print("accuracy of the model: {}".format(Utils.calculate_accuracy_score(self.y_test, y_test_predicted)))
+            print("accuracy of the model: {}".format(Utils.calculate_accuracy_score(self.__y_test, y_test_predicted)))
 
-            confusion_mat = Utils.calculate_confusion_matrix(self.y_test, y_test_predicted)
+            confusion_mat = Utils.calculate_confusion_matrix(self.__y_test, y_test_predicted)
             print(confusion_mat[0])
             print(confusion_mat[1])
 
@@ -64,19 +65,24 @@ class SupportVectorMachine:
         else:
             print("Train SVM before Testing.")
 
-    def predict_sample(self, sample_data):
+    def predict_sample(self, sample_data, return_lbl=False):
         try:
-            if self.trained_weights is not None:
+            if self.__trained_weights is not None:
                 # min_max_scalar = Utils.calculate_min_max_scalar(pd.read_csv(self.training_data_dir))
-                sample_data = Utils.normalize_dataset(sample_data, self.min_max_scalar)
 
-                sample_data.insert(loc=len(sample_data.columns), column='intercept', value=1)
+                sample_data_copy = sample_data.copy(deep=True)
 
-                y_predict = np.sign(np.dot(sample_data, self.trained_weights))
-                if y_predict > 0:
-                    print('ASD')
-                else:
-                    print('Normal')
+                sample_data_copy = Utils.normalize_dataset(sample_data_copy, self.__min_max_scalar)
+
+                sample_data_copy.insert(loc=len(sample_data_copy.columns), column='intercept', value=1)
+
+                y_predict = np.sign(np.dot(sample_data_copy, self.__trained_weights))
+
+                if return_lbl is True:
+                    if y_predict > 0:
+                        return 'ASD'
+                    else:
+                        return 'Normal'
 
                 return y_predict
             else:
@@ -89,16 +95,16 @@ class SupportVectorMachine:
     def load_trained_weights(self, weights_fl=Weights_File):
         try:
             print("loading SVM trained weights")  # debug
-            self.trained_weights = np.loadtxt(weights_fl)
+            self.__trained_weights = np.loadtxt(weights_fl)
         except Exception as e:
             print("Error Occurred loading SVM weights", e)
 
-    def save_trained_weights(self, weights_fl):
-        if self.trained_weights is not None:
+    def __save_trained_weights(self, weights_fl):
+        if self.__trained_weights is not None:
             w_fl = open(weights_fl, 'w')
-            np.savetxt(w_fl, self.trained_weights)
+            np.savetxt(w_fl, self.__trained_weights)
             w_fl.close()
-            self.trained_weights = []
+            self.__trained_weights = []
         else:
             print("Train SVM first.")
 
