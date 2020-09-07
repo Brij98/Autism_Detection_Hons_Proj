@@ -63,7 +63,7 @@ class MainClassifier:
 
 if __name__ == "__main__":
     mc = MainClassifier()
-    # mc.train_classifiers()
+    mc.train_classifiers()
 
     # data = [[3, 192, 64, 5692, 2846, 55.5706155869889, 32.2860284249144]]
     data = [[12, 2564, 213.666666666666, 29597, 2690.63636363636, 176.05935069273, 132.591777456996]]

@@ -1,3 +1,5 @@
+import traceback
+
 import numpy as np
 import pandas as pd
 
@@ -58,6 +60,7 @@ class SupportVectorMachine:
             print("accuracy of the model: {}".format(Utils.calculate_accuracy_score(self.__y_test, y_test_predicted)))
 
             confusion_mat = Utils.calculate_confusion_matrix(self.__y_test, y_test_predicted)
+            print("SVM confusion Matrix")
             print(confusion_mat[0])
             print(confusion_mat[1])
 
@@ -93,6 +96,7 @@ class SupportVectorMachine:
         except Exception as e:
             print("Error occurred predicting the sample in SVM.")
             print('Exception', e)
+            traceback.print_exc()
 
     def load_trained_weights(self, weights_fl=Weights_File):
         try:
@@ -106,7 +110,7 @@ class SupportVectorMachine:
             w_fl = open(weights_fl, 'w')
             np.savetxt(w_fl, self.__trained_weights)
             w_fl.close()
-            self.__trained_weights = []
+            # self.__trained_weights = []
         else:
             print("Train SVM first.")
 

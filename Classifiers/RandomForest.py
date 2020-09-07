@@ -75,6 +75,7 @@ class RandomForest:
         print("Accuracy: ", accuracy_score)
 
         cf = Utils.calculate_confusion_matrix(self.__y_test, y_predictions)
+        print("Random Forest Confusion Matrix")
         print(cf[0])
         print(cf[1])
 

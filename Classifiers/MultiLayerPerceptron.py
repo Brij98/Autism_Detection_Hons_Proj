@@ -48,6 +48,7 @@ class MultiLayerPerceptron:
         print("Accuracy: ", accuracy_score)
 
         cf = Utils.calculate_confusion_matrix(self.__y_test, mlp_predictions)
+        print("Multi Layer Perceptron Confusion Matrix")
         print(cf[0])
         print(cf[1])
 
