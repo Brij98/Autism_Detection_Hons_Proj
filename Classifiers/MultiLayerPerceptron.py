@@ -7,7 +7,9 @@ from sklearn.neural_network import MLPClassifier
 
 from Classifiers import Utils
 
-MultilayerPerceptronMdlFl = 'Trained_Classifiers/MultiLayerPerceptronModel.sav'
+# MultilayerPerceptronMdlFl = 'Trained_Classifiers/MultiLayerPerceptronModel.sav'
+MultilayerPerceptronMdlFl = "C:/Users/Brijesh Prajapati/Documents/Projects/Autism_Detection_Hons_Proj/Classifiers/" \
+                            "Trained_Classifiers/MultiLayerPerceptronModel.sav"
 
 
 class MultiLayerPerceptron:

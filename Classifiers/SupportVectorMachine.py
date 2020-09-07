@@ -5,7 +5,9 @@ from Classifiers import Utils
 
 Learning_rate = 0.000001
 Reg_strength = 10000  # C
-Weights_File = 'Trained_Classifiers/SVM_Weights'
+# Weights_File = 'Trained_Classifiers/SVM_Weights'
+Weights_File = "C:/Users/Brijesh Prajapati/Documents/Projects/Autism_Detection_Hons_Proj/Classifiers/" \
+               "Trained_Classifiers/SVM_Weights"
 
 
 #   SVM

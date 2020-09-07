@@ -3,8 +3,10 @@ import concurrent.futures
 import re
 import csv
 import os
-from Features.ScanpathFeatures import extract_scanpath_feature, Scanpath_Feature_Names, calculate_scan_path_features
+from Features.ScanpathFeatures import extract_scanpath_feature, Scanpath_Feature_Names, extract_scanpath_feature_test
 
+
+# from Features import ScanpathFeatures
 
 class Features:
     def __init__(self, scanpaths_dir, images_dir):
@@ -14,18 +16,18 @@ class Features:
     def extract_scanpath_features_train(self, feature_class, dir_to_save):
         extracted_features = []
 
-        scanpaths_lst = glob.glob(self.scanpaths_dir + "/*.txt")
-        scanpaths_lst = sorted(scanpaths_lst, key=key_func)
+        scanpaths_file_lst = glob.glob(self.scanpaths_dir + "/*.txt")
+        scanpaths_file_lst = sorted(scanpaths_file_lst, key=key_func)
 
-        images_lst = glob.glob(self.images_dir + "/*.png")
-        images_lst = sorted(images_lst, key=key_func)
+        images_file_lst = glob.glob(self.images_dir + "/*.png")
+        images_file_lst = sorted(images_file_lst, key=key_func)
 
         # retrieving content of each text file and extracting features from the scan paths.
         # using a 10 threads to handle each text file.
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
             extract_feature = {executor.submit(extract_scanpath_feature, img_scnpth[0], img_scnpth[1],
                                                feature_class): img_scnpth
-                               for img_scnpth in zip(scanpaths_lst, images_lst)}
+                               for img_scnpth in zip(scanpaths_file_lst, images_file_lst)}
 
             for future in concurrent.futures.as_completed(extract_feature):
                 # feature = extract_feature[future]
@@ -48,12 +50,13 @@ class Features:
                     for scanpath in scanpaths:
                         write_row.writerow(scanpath)
 
+    # calculate the feature values for test data
 
-# calculate the feature values for test data
-def extract_scanpath_features_test(scan_path_list, image_size):
-    features = calculate_scan_path_features(scan_path_list, image_size)
 
-    return features
+def extract_features_test(scanpath_fl, image_fl):
+    feature_val_list = extract_scanpath_feature_test(scanpath_fl, image_fl)
+
+    return feature_val_list
 
 
 def key_func(x):

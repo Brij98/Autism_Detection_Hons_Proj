@@ -10,12 +10,22 @@ def extract_scanpath_feature(scanpath_fl, image_fl, feature_class):
     image_size = cv2.imread(image_fl).shape
     scanpath_lst = split_scanpaths(scanpath_fl=scanpath_fl)
 
-    feature_val_list = calculate_scan_path_features(scanpath_lst, image_size, feature_class, False)
+    feature_val_list = calculate_scan_path_features(scanpath_lst, image_size, False, feature_class)
 
     return feature_val_list
 
 
-def calculate_scan_path_features(scan_path_list, image_size, feature_class=None, test=True):
+# extract scan path features for test data
+def extract_scanpath_feature_test(scanpath_fl, image_fl):
+    image_size = cv2.imread(image_fl).shape
+    scanpath_lst = split_scanpaths(scanpath_fl=scanpath_fl)
+
+    feature_val_list = calculate_scan_path_features(scanpath_lst, image_size, test=True)
+
+    return feature_val_list
+
+
+def calculate_scan_path_features(scan_path_list, image_size, test=True, feature_class=None):
     feature_val_list = []
 
     for scanpath in scan_path_list:

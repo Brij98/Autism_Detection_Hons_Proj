@@ -51,7 +51,14 @@ class MainClassifier:
 
         predictions = [svm_p, rf_p, mlp_p]
 
-        return most_common_label(predictions)
+        dict_to_ret = {
+            "Support_Vector_Machine_Prediction": svm_p,
+            "Random_Forest_Prediction": rf_p,
+            "Multi_Layer_Perceptron_Prediction": mlp_p,
+            "Final_Prediction": most_common_label(predictions)
+        }
+
+        return dict_to_ret, most_common_label(predictions)
 
 
 if __name__ == "__main__":
@@ -63,5 +70,5 @@ if __name__ == "__main__":
     df = pd.DataFrame(data, columns=["fixpoint_count", "total_duration", "mean_duration", "total_scanpath_len",
                                      "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord"])
 
-    prediction = mc.predict_sample(df)
+    prediction = mc.predict_sample(df)[1]
     print(prediction)

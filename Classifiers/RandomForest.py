@@ -8,7 +8,9 @@ import pandas as pd
 from Classifiers import Utils
 from Classifiers.DecisionTree import DecisionTree, most_common_label
 
-RandomForestMdlFile = 'Trained_Classifiers/RandomForestClassifierModel'
+# RandomForestMdlFile = 'Trained_Classifiers/RandomForestClassifierModel'
+RandomForestMdlFile = "C:/Users/Brijesh Prajapati/Documents/Projects/Autism_Detection_Hons_Proj/Classifiers/" \
+                      "Trained_Classifiers/RandomForestClassifierModel"
 
 
 class RandomForest:
