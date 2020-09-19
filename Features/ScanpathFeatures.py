@@ -45,10 +45,18 @@ def calculate_scan_path_features(scan_path_list, image_size, test=True, feature_
         feature_val.append(np.mean(scanpath['duration']))
 
         #  calculating the euclidean distance
-        x_coords = scanpath['x']
-        x_coords = np.diff(x_coords)
-        y_coords = scanpath['y']
-        y_coords = np.diff(y_coords)
+        # x_coords = scanpath['x']
+        # x_coords = np.diff(x_coords)
+        # y_coords = scanpath['y']
+        # y_coords = np.diff(y_coords)
+
+        x_coords = np.zeros(len(scanpath['x']))
+        for i in range(len(scanpath['x']) - 1):
+            x_coords[i] = scanpath['x'][i + 1] - scanpath['x'][i]
+
+        y_coords = np.zeros(len(scanpath['y']))
+        for i in range(len(scanpath['y']) - 1):
+            y_coords[i] = scanpath['y'][i + 1] - scanpath['y'][i]
 
         amplitudes = []
         for x, y in zip(x_coords, y_coords):
