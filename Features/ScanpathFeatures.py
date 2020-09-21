@@ -6,26 +6,27 @@ Scanpath_Feature_Names = ["fixpoint_count", "total_duration", "mean_duration", "
                           "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord", "feature_class"]
 
 
-def extract_scanpath_feature(scanpath_fl, image_fl, feature_class):
+# extracting scanpath feature from the text file
+def scanpath_feature_train(scanpath_fl, image_fl, feature_class=None):
     image_size = cv2.imread(image_fl).shape
     scanpath_lst = split_scanpaths(scanpath_fl=scanpath_fl)
 
-    feature_val_list = calculate_scan_path_features(scanpath_lst, image_size, False, feature_class)
+    feature_val_list = calculate_scan_path_features(scanpath_lst, image_size, feature_class)
 
     return feature_val_list
 
 
 # extract scan path features for test data
-def extract_scanpath_feature_test(scanpath_fl, image_fl):
+def scanpath_feature_test(scanpath_fl, image_fl):
     image_size = cv2.imread(image_fl).shape
     scanpath_lst = split_scanpaths(scanpath_fl=scanpath_fl)
 
-    feature_val_list = calculate_scan_path_features(scanpath_lst, image_size, test=True)
+    feature_val_list = calculate_scan_path_features(scanpath_lst, image_size)
 
     return feature_val_list
 
 
-def calculate_scan_path_features(scan_path_list, image_size, test=True, feature_class=None):
+def calculate_scan_path_features(scan_path_list, image_size, feature_class=None):
     feature_val_list = []
 
     for scanpath in scan_path_list:
@@ -97,7 +98,7 @@ def calculate_scan_path_features(scan_path_list, image_size, test=True, feature_
         feature_name.append("mean_dist_mean_coord")
         feature_val.append(np.mean(avg_dist_coord))
 
-        if not test:
+        if feature_class is not None:
             feature_name.append("feature_class")
             feature_val.append(feature_class)
 

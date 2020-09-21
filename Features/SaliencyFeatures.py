@@ -39,7 +39,7 @@ def compute_saliency_map(input_img):
 
 
 # extracting saliency features for training
-def saliency_feature_train(scanpath_fl, image_fl, feature_class):
+def saliency_feature_train(scanpath_fl, image_fl, feature_class=None):
     input_img = cv2.imread(image_fl)
 
     image_size = input_img.shape[:2]
@@ -48,7 +48,7 @@ def saliency_feature_train(scanpath_fl, image_fl, feature_class):
 
     pred_saliency_map = compute_saliency_map(input_img)
 
-    feature_val_list = calculate_saliency_features(scanpath_lst, image_size, pred_saliency_map, False, feature_class)
+    feature_val_list = calculate_saliency_features(scanpath_lst, image_size, pred_saliency_map, feature_class)
 
     return feature_val_list
 
@@ -63,7 +63,7 @@ def saliency_feature_test(scanpath_fl, image_fl):
 
     pred_saliency_map = compute_saliency_map(input_img)
 
-    feature_val_list = calculate_saliency_features(scanpath_lst, image_size, pred_saliency_map, True)
+    feature_val_list = calculate_saliency_features(scanpath_lst, image_size, pred_saliency_map)
 
     return feature_val_list
 
@@ -72,9 +72,9 @@ def saliency_feature_test(scanpath_fl, image_fl):
 # scanpath_list: list of scanpaths to extract features from
 # image_size: size of the image for which the scanpaths were recorded (height, width)
 # predicted_saliency_map: predicted saliency map of the image
-def calculate_saliency_features(scanpath_list, image_size, predicted_saliency_map, test=True, feature_class=None):
+def calculate_saliency_features(scanpath_list, image_size, predicted_saliency_map, feature_class=None):
     feature_val_list = []
-    predicted_saliency_map_cpy = predicted_saliency_map.deepcopy.copy()
+    predicted_saliency_map_cpy = predicted_saliency_map.copy()
 
     for scanpath in scanpath_list:
         feature_val_name = []
@@ -84,11 +84,14 @@ def calculate_saliency_features(scanpath_list, image_size, predicted_saliency_ma
         # creating saliency map from the coordinates of the subject's eye data
         actual_saliency_map = np.zeros(image_size)  # creating blank image of row * col
 
+        # print(type(actual_saliency_map))     # debug
+        # print(type(scanpath))  # debug
         for coordinate in scanpath:
-            actual_saliency_map[coordinate('y').astype(int) - 1, coordinate('x').astype(int) - 1] = 1
+            # print(coordinate[1])  # debug
+            actual_saliency_map[int(coordinate[2]) - 1, int(coordinate[1]) - 1] = 1
 
-            saliency_values.append(predicted_saliency_map_cpy[coordinate('y').astype(int) - 1,
-                                                              coordinate('x').astype(int) - 1])
+            saliency_values.append(predicted_saliency_map_cpy[int(coordinate[2]) - 1,
+                                                              int(coordinate[1]) - 1])
 
         actual_saliency_map = cv2.GaussianBlur(actual_saliency_map, (125, 125), 21)  # applying gaussian blur
 
@@ -130,15 +133,17 @@ def calculate_saliency_features(scanpath_list, image_size, predicted_saliency_ma
         predicted_saliency_map_cpy -= predicted_saliency_map_cpy.min()
 
         sum_pred_sal_map = predicted_saliency_map_cpy.sum()
-        if sum_pred_sal_map is 0:
+        if sum_pred_sal_map == 0:
             predicted_saliency_map_cpy = np.ones_like(predicted_saliency_map_cpy)
+            # print("predicted_saliency_map_cpy sum is : ", 0)    # debug
 
-        predicted_saliency_map_cpy /= predicted_saliency_map_cpy.sum()
+        temp_pred_sal_map = np.true_divide(predicted_saliency_map, sum_pred_sal_map)
+        predicted_saliency_map_cpy = temp_pred_sal_map
 
         epsilon = 7.0 / 3 - 4.0 / 3 - 1
 
         relative_entropy = (actual_saliency_map * np.log(actual_saliency_map / (predicted_saliency_map_cpy + epsilon) +
-                                                         epsilon)).sum
+                                                         epsilon)).sum()
 
         feature_val_name.append("relative_entropy")
         feature_val.append(relative_entropy)
@@ -146,7 +151,7 @@ def calculate_saliency_features(scanpath_list, image_size, predicted_saliency_ma
         # Calculating the normalized scanpath saliency
         predicted_saliency_map_cpy -= predicted_saliency_map_cpy.mean()
         std_deviation = predicted_saliency_map_cpy.std()
-        if std_deviation is not 0:
+        if std_deviation != 0:
             predicted_saliency_map_cpy /= std_deviation
 
         # sal_val = []
@@ -158,7 +163,7 @@ def calculate_saliency_features(scanpath_list, image_size, predicted_saliency_ma
         feature_val.append(np.mean(predicted_saliency_map_cpy[scanpath['y'].astype('int') - 1,
                                                               scanpath['x'].astype('int') - 1]))
 
-        if test is False:
+        if feature_class is not None:
             feature_val_name.append("feature_class")
             feature_val.append(feature_class)
 
