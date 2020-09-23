@@ -215,20 +215,20 @@ def process_training_data(fl_dir, min_max_scalar):
 
 
 if __name__ == "__main__":
-    svm_classifier = SupportVectorMachine("D:/TrainingDataset_YEAR_PROJECT/TrainingSet.csv")
-    # svm_classifier.train_support_vector_machine()
+    svm_classifier = SupportVectorMachine("D:/TrainingDataset_YEAR_PROJECT/TrainingSet_Saliency_2.csv")
+    svm_classifier.train_support_vector_machine()
     #
     # svm_classifier.save_trained_weights("SVM_Weights")
-    svm_classifier.load_trained_weights(
-        "Trained_Classifiers/SVM_Weights")
+    # svm_classifier.load_trained_weights(
+    #     "Trained_Classifiers/SVM_Weights")
 
     # svm_classifier.test_support_vector_machine()
 
     # ASD data
-    data = [[12, 2564, 213.666666666666, 29597, 2690.63636363636, 176.05935069273, 132.591777456996]]
-    df = pd.DataFrame(data, columns=["fixpoint_count", "total_duration", "mean_duration", "total_scanpath_len",
-                                     "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord"])
+    # data = [[12, 2564, 213.666666666666, 29597, 2690.63636363636, 176.05935069273, 132.591777456996]]
+    # df = pd.DataFrame(data, columns=["fixpoint_count", "total_duration", "mean_duration", "total_scanpath_len",
+    #                                  "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord"])
 
-    result = svm_classifier.predict_sample(df)
+    # result = svm_classifier.predict_sample(df)
 
     # train_SVM("D:/TrainingDataset_YEAR_PROJECT/TrainingSet.csv")

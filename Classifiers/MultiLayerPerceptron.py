@@ -15,7 +15,7 @@ MultilayerPerceptronMdlFl = "C:/Users/Brijesh Prajapati/Documents/Projects/Autis
 class MultiLayerPerceptron:
     def __init__(self, training_data_dir):
         self.training_data_dir = training_data_dir
-        self.__mlp_classifier = MLPClassifier(hidden_layer_sizes=9, activation='relu', max_iter=400, solver='adam')
+        self.__mlp_classifier = MLPClassifier(hidden_layer_sizes=8, activation='relu', max_iter=400, solver='adam')
         self.__x_train = None
         self.__x_test = None
         self.__y_train = None
@@ -33,7 +33,7 @@ class MultiLayerPerceptron:
         self.__mlp_classifier = self.__mlp_classifier.fit(self.__x_train, self.__y_train)
 
         t1 = time.time()  # test purposes
-        print("Finished Training Random Forest Classifier in: ", t1 - t0)
+        print("Finished Training MultiLayerPerceptron in: ", t1 - t0)
 
         self.__test_MultiLayerPerceptron()
 
@@ -94,13 +94,13 @@ def process_training_data(fl_dir, min_max_scalar=None):
 
 
 if __name__ == "__main__":
-    mlp_classifier = MultiLayerPerceptron(training_data_dir="D:/TrainingDataset_YEAR_PROJECT/TrainingSet.csv")
-    # mlp_classifier.train_MultiLayerPerceptron(save_mdl=False)
+    mlp_classifier = MultiLayerPerceptron(training_data_dir="D:/TrainingDataset_YEAR_PROJECT/TrainingSet_Saliency_3.csv")
+    mlp_classifier.train_MultiLayerPerceptron(save_mdl=False)
 
-    mlp_classifier.load_MultiLayerPerceptron()
-
-    data = [[3, 192, 64, 5692, 2846, 55.5706155869889, 32.2860284249144]]
-    df = pd.DataFrame(data, columns=["fixpoint_count", "total_duration", "mean_duration", "total_scanpath_len",
-                                     "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord"])
-
-    print(mlp_classifier.predict(df))
+    # mlp_classifier.load_MultiLayerPerceptron()
+    #
+    # data = [[3, 192, 64, 5692, 2846, 55.5706155869889, 32.2860284249144]]
+    # df = pd.DataFrame(data, columns=["fixpoint_count", "total_duration", "mean_duration", "total_scanpath_len",
+    #                                  "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord"])
+    #
+    # print(mlp_classifier.predict(df))

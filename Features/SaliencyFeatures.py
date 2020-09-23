@@ -1,13 +1,19 @@
+import os
+
 import cv2
 
 import numpy as np
 
-from Features.ScanpathFeatures import split_scanpaths
+from Features.Feature_Utils import split_scanpaths
 
 Saliency_Feature_Names = ["first_saliency_fixation", "first_above_0.75_max_rank", "first_above_0.9_max_rank",
                           "saliency_value_mean", "saliency_value_sum", "weighted_duration_sum",
                           "weighted_duration_mean", "max_saliency_value", "relative_entropy",
                           "normalized_saliency_scanpath", "feature_class"]
+Saliency_Feature_Names_Test = ["first_saliency_fixation", "first_above_0.75_max_rank", "first_above_0.9_max_rank",
+                               "saliency_value_mean", "saliency_value_sum", "weighted_duration_sum",
+                               "weighted_duration_mean", "max_saliency_value", "relative_entropy",
+                               "normalized_saliency_scanpath"]
 
 
 # for test/experiments purposes only
@@ -18,7 +24,7 @@ def sal_test_map(img_path, ASD, TD):
 
     success, saliency_map = saliency.computeSaliency(input_img)
     saliency_map = (saliency_map * 255).astype("uint8")
-    saliency_map_1 = cv2.GaussianBlur(saliency_map, (125, 125), 21)
+    saliency_map_1 = cv2.GaussianBlur(saliency_map, (109, 109), 18)
 
     cv2.imshow("Original Image", input_img)
     cv2.imshow("Saliency Map", saliency_map)
@@ -33,7 +39,7 @@ def compute_saliency_map(input_img):
 
     success, saliency_map = saliency.computeSaliency(input_img)
     saliency_map = (saliency_map * 255).astype("uint8")
-    saliency_map = cv2.GaussianBlur(saliency_map, (91, 91), 15)
+    saliency_map = cv2.GaussianBlur(saliency_map, (109, 109), 18)
 
     return saliency_map
 
@@ -44,9 +50,19 @@ def saliency_feature_train(scanpath_fl, image_fl, feature_class=None):
 
     image_size = input_img.shape[:2]
 
+    # saliency map from the dir
+    # file_name = os.path.splitext(os.path.basename(image_fl))[0]
+    #
+    # pred_saliency_map = cv2.imread(
+    #     "C:/Users/Brijesh Prajapati/Documents/Projects/TrainingDataset_YEAR_PROJECT/TrainingData/"
+    #     "ASD_FixMaps/" + file_name + "_s.png")
+    # pred_saliency_map = cv2.cvtColor(pred_saliency_map, cv2.COLOR_BGR2GRAY)
+    # pred_saliency_map = (pred_saliency_map * 255).astype("uint8")
+
     scanpath_lst = split_scanpaths(scanpath_fl=scanpath_fl)
 
     pred_saliency_map = compute_saliency_map(input_img)
+    # print("Sal Map", pred_saliency_map.shape)
 
     feature_val_list = calculate_saliency_features(scanpath_lst, image_size, pred_saliency_map, feature_class)
 
@@ -93,7 +109,7 @@ def calculate_saliency_features(scanpath_list, image_size, predicted_saliency_ma
             saliency_values.append(predicted_saliency_map_cpy[int(coordinate[2]) - 1,
                                                               int(coordinate[1]) - 1])
 
-        actual_saliency_map = cv2.GaussianBlur(actual_saliency_map, (125, 125), 21)  # applying gaussian blur
+        actual_saliency_map = cv2.GaussianBlur(actual_saliency_map, (3, 3), 0.5)  # applying gaussian blur
 
         # value of the first fixation on the predicted saliency map
         feature_val_name.append("first_saliency_fixation")
@@ -175,7 +191,10 @@ def calculate_saliency_features(scanpath_list, image_size, predicted_saliency_ma
 if __name__ == "__main__":
     # pass
     sal_test_map("C:/Users/Brijesh Prajapati/Documents/Projects/TrainingDataset_YEAR_PROJECT/TrainingData"
-                 "/Images/6.png", "C:/Users/Brijesh Prajapati/Documents/Projects/TrainingDataset_YEAR_PROJECT"
-                                  "/TrainingData/ASD_FixMaps/6_s.png",
+                 "/Images/7.png", "C:/Users/Brijesh Prajapati/Documents/Projects/TrainingDataset_YEAR_PROJECT"
+                                  "/TrainingData/ASD_FixMaps/7_s.png",
                  "C:/Users/Brijesh Prajapati/Documents/Projects/TrainingDataset_YEAR_PROJECT/TrainingData"
-                 "/TD_FixMaps/6_s.png")
+                 "/TD_FixMaps/7_s.png")
+
+# References:
+#   "Classifying Autism Spectrum Disorder Based on Scanpaths and Saliency", IEEE, Author: Mikhail Startsev, Micheal Dorr

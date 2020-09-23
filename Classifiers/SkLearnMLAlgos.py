@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.decomposition import PCA
 
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier, ExtraTreesClassifier
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier, ExtraTreesClassifier, AdaBoostClassifier
 from sklearn.feature_selection import VarianceThreshold, SelectKBest, chi2, SelectFromModel
 from sklearn.linear_model import LogisticRegression
 import joblib
@@ -23,26 +23,27 @@ def train_svm_model(fl_dir):
     #  X_train, X_test, Y_train, Y_test = SupportVectorMachine.proc_CSV_data(fl_dir)
     dataframe = pd.read_csv(fl_dir)
     dataframe["feature_class"]. \
-        replace({"ASD": 0, "TD": 1},
+        replace({"ASD": 1, "TD": 0},
                 inplace=True)
     dataframe = dataframe.sample(frac=1)
 
-    min_max_scalar = Utils.calculate_min_max_scalar(dataframe)
-    dataframe = Utils.normalize_dataset(dataframe, min_max_scalar)
-
+    # DATA NORMALIZATION
+    # min_max_scalar = Utils.calculate_min_max_scalar(dataframe)
+    # dataframe = Utils.normalize_dataset(dataframe, min_max_scalar)
+    #
     # X = dataframe.drop(labels="feature_class", axis=1)
     # Y = dataframe['feature_class']
-
-    #  feature selection BEGIN
+    #
+    # #  feature selection BEGIN
     # print("Shape before feature selection", X.shape)
-
-    # L1-based feature selection
+    #
+    # # L1-based feature selection
     # lsvc = LinearSVC(C=0.01, penalty="l1", dual=False).fit(X, Y)
     # model = SelectFromModel(lsvc, prefit=True)
     # X = model.transform
-
-    # Univariate feature selection
-    #  X = SelectKBest(chi2, k=6).fit_transform(X, Y)
+    #
+    # # Univariate feature selection
+    # X = SelectKBest(chi2, k=6).fit_transform(X, Y)
 
     # Tree-based feature selection
     # clf = ExtraTreesClassifier(n_estimators=50)
@@ -65,7 +66,7 @@ def train_svm_model(fl_dir):
     # X_test = pd.DataFrame(scalar.transform(X_test.values))
     #
     # ns_probs = [0 for _ in range(len(Y_test))]
-    # svm_model_linear = SVC(kernel='rbf', C=1.0, probability=True).fit(X_train, Y_train)  # polynomial kernel
+    # svm_model_linear = SVC(kernel='rbf', probability=True).fit(X_train, Y_train)  # polynomial kernel
     #
     # # load the saved model
     # # load_model = joblib.load(filename=saved_mdl_path)
@@ -131,28 +132,28 @@ def train_svm_model(fl_dir):
     # print(accuracy_score(Y_test, y_pred.round(), normalize=False))
 
     # NN..............................................................
-    mlp = MLPClassifier(hidden_layer_sizes=9, activation='relu', max_iter=400, solver='adam').fit(X_train, Y_train)
-
-    predictions = mlp.predict(X_test)
-    print(confusion_matrix(Y_test, predictions))
-    print(classification_report(Y_test, predictions))
-    print(Utils.calculate_accuracy_score(Y_test, predictions))
+    # mlp = MLPClassifier(hidden_layer_sizes=9, activation='relu', max_iter=400, solver='adam').fit(X_train, Y_train)
+    #
+    # predictions = mlp.predict(X_test)
+    # print(confusion_matrix(Y_test, predictions))
+    # print(classification_report(Y_test, predictions))
+    # print(Utils.calculate_accuracy_score(Y_test, predictions))
 
     # KNN
     # scalar = MinMaxScaler()
     # X_train = pd.DataFrame(scalar.fit_transform(X_train.values))
     # X_test = pd.DataFrame(scalar.transform(X_test.values))
+
+    model = KNeighborsClassifier(n_neighbors=2).fit(X_train, Y_train)
+    y_pred = model.predict(X_test)
     #
-    # model = KNeighborsClassifier(n_neighbors=11).fit(X_train, Y_train)
-    # y_pred = model.predict(X_test)
-    # #
-    # accuracy = model.score(X_test, Y_test)
-    # print(accuracy)  # debug
-    #
-    # print(confusion_matrix(Y_test, y_pred))
-    # print(classification_report(Y_test, y_pred))
-    # accuracy = model.score(X_test, Y_test)
-    # print(accuracy)  # debug
+    accuracy = model.score(X_test, Y_test)
+    print(accuracy)  # debug
+
+    print(confusion_matrix(Y_test, y_pred))
+    print(classification_report(Y_test, y_pred))
+    accuracy = model.score(X_test, Y_test)
+    print(accuracy)  # debug
 
     # Naive Bayes
     # scalar = MinMaxScaler()
@@ -184,5 +185,16 @@ def train_svm_model(fl_dir):
     # print(accuracy)  # debug
 
 
+    # Ada Boost Algo
+    # adaboost_classifier = AdaBoostClassifier(n_estimators=10, learning_rate=0.001)
+    #
+    # adaboost_classifier.fit(X_train, Y_train)
+    #
+    # y_pred = adaboost_classifier.predict(X_test)
+    #
+    # print("Classification Report", classification_report(Y_test, y_pred))
+    # print("Accuracy Report", Utils.calculate_accuracy_score(Y_test, y_pred))
+
+
 if __name__ == "__main__":
-    train_svm_model("D:/TrainingDataset_YEAR_PROJECT/TrainingSet.csv")
+    train_svm_model("D:/TrainingDataset_YEAR_PROJECT/TrainingSet_Saliency_3.csv")

@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import math
+from Features.Feature_Utils import split_scanpaths
 
 Scanpath_Feature_Names = ["fixpoint_count", "total_duration", "mean_duration", "total_scanpath_len",
                           "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord", "feature_class"]
@@ -26,6 +27,7 @@ def scanpath_feature_test(scanpath_fl, image_fl):
     return feature_val_list
 
 
+# calculate the features from the scan path received.
 def calculate_scan_path_features(scan_path_list, image_size, feature_class=None):
     feature_val_list = []
 
@@ -106,14 +108,16 @@ def calculate_scan_path_features(scan_path_list, image_size, feature_class=None)
 
     return feature_val_list
 
-
 #  splitting scanpaths into list
-def split_scanpaths(scanpath_fl):
-    scanpaths = np.genfromtxt(scanpath_fl, names=True, case_sensitive='lower', delimiter=',', dtype=np.float)
-    scanpath_start = np.where(scanpaths['idx'] == 0)[0]
-    scanpath_end = np.append(scanpath_start[1:], len(scanpaths))
-    ret_arr = []
-    for i, j in zip(scanpath_start, scanpath_end):
-        ret_arr.append(scanpaths[i:j])
+# def split_scanpaths(scanpath_fl):
+#     scanpaths = np.genfromtxt(scanpath_fl, names=True, case_sensitive='lower', delimiter=',', dtype=np.float)
+#     scanpath_start = np.where(scanpaths['idx'] == 0)[0]
+#     scanpath_end = np.append(scanpath_start[1:], len(scanpaths))
+#     ret_arr = []
+#     for i, j in zip(scanpath_start, scanpath_end):
+#         ret_arr.append(scanpaths[i:j])
+#
+#     return ret_arr
 
-    return ret_arr
+# References:
+#   "Classifying Autism Spectrum Disorder Based on Scanpaths and Saliency", IEEE, Author: Mikhail Startsev, Micheal Dorr

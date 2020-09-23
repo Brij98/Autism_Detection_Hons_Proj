@@ -166,12 +166,12 @@ def process_training_data(fl_dir):
 
 
 if __name__ == '__main__':
-    rf = RandomForest(num_trees=5, max_depth=10)
-    rf.train_random_forest("D:/TrainingDataset_YEAR_PROJECT/TrainingSet.csv")
+    rf = RandomForest(num_trees=12, max_depth=5)
+    rf.train_random_forest("D:/TrainingDataset_YEAR_PROJECT/TrainingSet_Saliency_2.csv")
 
-    data = [[3, 192, 64, 5692, 2846, 55.5706155869889, 32.2860284249144]]
-    df = pd.DataFrame(data, columns=["fixpoint_count", "total_duration", "mean_duration", "total_scanpath_len",
-                                     "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord"])
-
-    ret_val = rf.predict(df, True)
-    print(ret_val)
+    # data = [[3, 192, 64, 5692, 2846, 55.5706155869889, 32.2860284249144]]
+    # df = pd.DataFrame(data, columns=["fixpoint_count", "total_duration", "mean_duration", "total_scanpath_len",
+    #                                  "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord"])
+    #
+    # ret_val = rf.predict(df, True)
+    # print(ret_val)
