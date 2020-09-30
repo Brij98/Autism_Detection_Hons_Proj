@@ -37,7 +37,7 @@ class RandomForest:
         self.__arr_trees = []
         t0 = time.time()  # test purposes
 
-        # linear thread approach
+        # single thread approach
         # for k in range(self.num_tree):
         #     print("training_decision_tree")
         #     tree = DecisionTree(min_samples_split=self.min_sample_split, max_depth=self.max_depth,
@@ -79,6 +79,7 @@ class RandomForest:
         print(cf[0])
         print(cf[1])
 
+    # given input features classify the features and return a decision
     def predict(self, x, return_lbl=False):
         tree_predictions = []
 
@@ -126,6 +127,7 @@ class RandomForest:
             print("Error occurred while loading the decision trees", e)
 
 
+# used for training a single decision tree.
 def trained_decision_tree(min_sample_split, max_depth, num_features, x, y):
     # Create decision tree
     # print("Called trained_decision_tree")  # debug
@@ -139,10 +141,13 @@ def trained_decision_tree(min_sample_split, max_depth, num_features, x, y):
 # bootstrapping samples
 def bootstrap_samples(x, y):
     num_samples = x.shape[0]
+
+    # randomly select indices and allow for same index to occur more than once
     indices = np.random.choice(num_samples, size=num_samples, replace=True)
     return x[indices], y[indices]
 
 
+# renaming feature labels to 1 and 0 and converting dataframe into a numpy array
 def process_training_data(fl_dir):
     df = pd.read_csv(fl_dir)
 

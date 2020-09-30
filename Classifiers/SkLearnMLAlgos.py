@@ -197,4 +197,4 @@ def train_svm_model(fl_dir):
 
 
 if __name__ == "__main__":
-    train_svm_model("D:/TrainingDataset_YEAR_PROJECT/TrainingSet_Saliency_3.csv")
+    train_svm_model("D:/TrainingDataset_YEAR_PROJECT/TrainingSet_Saliency.csv")

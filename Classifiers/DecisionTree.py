@@ -66,7 +66,7 @@ class DecisionTree:
         if node.is_leaf_node():
             return node.value
 
-        if sample[node.feature] <= node.threshold:
+        if sample[node.feature] <= node.split_threshold:
             # traverse  from the left node
             return self.traverse_tree(sample, node.left)
         else:

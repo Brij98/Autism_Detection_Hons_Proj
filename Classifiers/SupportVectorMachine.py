@@ -5,8 +5,8 @@ import pandas as pd
 
 from Classifiers import Utils
 
-Learning_rate = 0.000001
-Reg_strength = 10000  # C
+Learning_rate = 0.000001    # step sizes used
+Reg_strength = 10000  # C allows to select number
 # Weights_File = 'Trained_Classifiers/SVM_Weights'
 Weights_File = "C:/Users/Brijesh Prajapati/Documents/Projects/Autism_Detection_Hons_Proj/Classifiers/" \
                "Trained_Classifiers/SVM_Weights"
@@ -215,7 +215,7 @@ def process_training_data(fl_dir, min_max_scalar):
 
 
 if __name__ == "__main__":
-    svm_classifier = SupportVectorMachine("D:/TrainingDataset_YEAR_PROJECT/TrainingSet_Saliency_2.csv")
+    svm_classifier = SupportVectorMachine("D:/TrainingDataset_YEAR_PROJECT/TrainingSet.csv")
     svm_classifier.train_support_vector_machine()
     #
     # svm_classifier.save_trained_weights("SVM_Weights")
