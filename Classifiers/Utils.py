@@ -62,7 +62,13 @@ def calculate_confusion_matrix(y_actual, y_pred):
             else:
                 true_neg += 1
 
-    return [[true_pos, false_neg], [false_pos, true_neg]]
+    # specificity = TN / (TN + FP)
+    specificity = (true_neg / (true_neg + false_pos))
+
+    # sensitivity = TP / (TP + FN)
+    sensitivity = (true_pos / (true_pos + false_neg))
+
+    return [[true_pos, false_neg], [false_pos, true_neg], [specificity, sensitivity]]
 
 
 # finds the min and max val for each col
@@ -86,6 +92,43 @@ def normalize_dataset(df, min_max):
         df[col_name] = (df[col_name] - min_val) / (max_val - min_val)
 
     return df
+
+
+def calculate_min_max_np_scalar(data):
+    min_max_list = list()
+    min_arr = np.min(data.to_numpy(), axis=0)
+    max_arr = np.max(data.to_numpy(), axis=0)
+    min_max_list.append(np.delete(min_arr, -1, 0))
+    min_max_list.append(np.delete(max_arr, -1, 0))
+
+    return min_max_list
+
+
+def normalize_numpy_array(np_array, min_max_scalar):
+    if isinstance(min_max_scalar[0], pd.DataFrame):
+        min_arr = min_max_scalar[0].to_numpy()
+        max_arr = min_max_scalar[1].to_numpy()
+        normalized_arr = ((np_array - min_arr) / (max_arr - min_arr))
+        return normalized_arr
+    else:
+        # print(type(min_max_scalar[0]))
+        # for col in range(np_array.shape[1]):
+        #     np_array[col] = ((np_array[col] - min_max_scalar[0][0]) / (min_max_scalar[1][0] - min_max_scalar[0][0]))
+        min_arr = min_max_scalar[0]
+        max_arr = min_max_scalar[1]
+        normalized_arr = ((np_array - min_arr) / (max_arr - min_arr))
+
+        return normalized_arr
+
+
+
+# bootstrapping samples
+def bootstrap_samples(x, y):
+    num_samples = x.shape[0]
+
+    # randomly select indices and allow for same index to occur more than once
+    indices = np.random.choice(num_samples, size=num_samples, replace=True)
+    return x[indices], y[indices]
 
 
 def plot_roc_curve(y_pred, y_true):

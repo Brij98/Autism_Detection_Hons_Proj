@@ -66,7 +66,7 @@ class DecisionTree:
         if node.is_leaf_node():
             return node.value
 
-        if sample[node.feature] <= node.split_threshold:
+        if sample[node.feature] <= node.threshold:
             # traverse  from the left node
             return self.traverse_tree(sample, node.left)
         else:
@@ -82,7 +82,8 @@ class DecisionTree:
 # if Entropy = 1 : worst case
 # if Entropy = 0 : best case
 def calculate_entropy(vect_y):
-    histogram = np.bincount(vect_y)
+    # histogram = np.bincount(vect_y)
+    histogram = np.array([np.count_nonzero(vect_y == -1.0), np.count_nonzero(vect_y == 1.0)])
     calc_val = []
     for i in histogram:
         probability = i / len(vect_y)
@@ -185,7 +186,7 @@ if __name__ == "__main__":
     df = pd.read_csv("D:/TrainingDataset_YEAR_PROJECT/TrainingSet.csv")
 
     # replace labels
-    df['feature_class'].replace({'ASD': 0, 'TD': 1}, inplace=True)
+    df['feature_class'].replace({'ASD': 1.0, 'TD': -1.0}, inplace=True)
 
     X_train, X_test, y_train, y_test = Utils.train_test_split(df, 0.2)
 

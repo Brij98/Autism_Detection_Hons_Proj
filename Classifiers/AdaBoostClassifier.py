@@ -1,21 +1,31 @@
+import json
+import os
+import traceback
+
 import numpy as np
 import pandas as pd
 from Classifiers import Utils
+import pickle
+
+AdaBoostMdlFl = "C:/Users/Brijesh Prajapati/Documents/Projects/Autism_Detection_Hons_Proj/Classifiers/" \
+                      "Trained_Classifiers/AdaBoostClassifierModel"
 
 
 class AdaBoostClassifier:
-    def __init__(self, training_data_dir, num_classifiers=5):
-        self.__num_classifiers = num_classifiers
+    def __init__(self):
+        self.__num_classifiers = 2
         self.__classifiers = []
-        self.__training_data_dir = training_data_dir
+        # self.__training_data_dir = training_data_dir
         self.__x_train = None
         self.__x_test = None
         self.__y_train = None
         self.__y_test = None
 
-    def train_adaboost(self):
+    def train_adaboost(self, x_train, x_test, y_train, y_test, save_classifiers=False, save_loc=AdaBoostMdlFl,
+                       num_classifiers=5):
 
-        self.__x_train, self.__x_test, self.__y_train, self.__y_test = process_training_data(self.__training_data_dir)
+        self.__num_classifiers = num_classifiers
+        self.__x_train, self.__x_test, self.__y_train, self.__y_test = x_train, x_test, y_train, y_test
 
         num_samples, num_features = self.__x_train.shape
 
@@ -79,15 +89,37 @@ class AdaBoostClassifier:
         # testing adaboost
         self.__test_adaboost()
 
-    def predict_sample_adaboost(self, X):
-        # predicted_label = sign(SUM(alpha * prediction))
-        classifier_predictions = []
-        for classifier in self.__classifiers:
-            classifier_predictions.append(classifier.alpha_val * classifier.predict(X))
-        prediction = np.sum(classifier_predictions, axis=0)
-        prediction = np.sign(prediction)
+        if save_classifiers:
+            self.__save_adaboost_classifiers()
 
-        return prediction
+    def predict_sample_adaboost(self, X, return_lbl=False):
+        # predicted_label = sign(SUM(alpha * prediction))
+        if self.__classifiers is None:
+            try:
+                self.load_adaboost_classifier(AdaBoostMdlFl)
+            except Exception as ex:
+                print("Error loading weights")
+
+        if self.__classifiers is not None:
+            classifier_predictions = []
+
+            if isinstance(X, pd.DataFrame):
+                X = X.to_numpy()
+
+            for classifier in self.__classifiers:
+                classifier_predictions.append(classifier.alpha_val * classifier.predict(X))
+            prediction = np.sum(classifier_predictions, axis=0)
+            prediction = np.sign(prediction)
+
+            if return_lbl:
+                if prediction < 0:
+                    return 'ASD'
+                else:
+                    return 'TD'
+
+            return prediction
+        else:
+            return 0
 
     # testing random forest classifier
     def __test_adaboost(self):
@@ -102,9 +134,59 @@ class AdaBoostClassifier:
         print("Accuracy: ", accuracy_score)
 
         cf = Utils.calculate_confusion_matrix(self.__y_test, y_predictions)
-        print("Random Forest Adaboost Matrix")
+        print("Adaboost Matrix")
         print(cf[0])
         print(cf[1])
+
+        # write accuracy and confusion matrix to file
+
+        try:
+            report_fl_name = "C:/Users/Brijesh Prajapati/Documents/Projects/Autism_Detection_Hons_Proj/Classifiers/" \
+                             "Classifier_Reports/adaboost_current_report"
+
+            classifier_desc = "Adaboost number of stumps: " + str(self.__num_classifiers)
+            dict_report = {"desc": classifier_desc, "accuracy_score": str(accuracy_score),
+                           "tp": str(cf[0][0]), "fn": str(cf[0][1]),
+                           "fp": str(cf[1][0]), "tn": str(cf[1][1]),
+                           "specificity": str(cf[2][0]), "sensitivity": str(cf[2][1])}
+
+            with open(report_fl_name, 'w') as report_fl:
+                report_fl.write(json.dumps(dict_report))
+        except Exception as ex:
+            print("Exception occurred saving adaboost report", ex)
+
+    def __save_adaboost_classifiers(self, fl_name=AdaBoostMdlFl):
+        if self.__classifiers is not None:
+            try:
+                os.remove(fl_name)
+                print("Deleted previous file")
+                with open(fl_name, 'wb') as output:
+                    for classifier in self.__classifiers:
+                        pickle.dump(classifier, output, pickle.HIGHEST_PROTOCOL)
+                # return True
+            except Exception as e:
+                print("Exception saving the adaboost classifier")
+                print("Exception", e)
+                traceback.print_exc()
+                # return False
+        else:
+            print("Classifiers list is empty. Train the classifiers first.")
+            # return False
+
+    def load_adaboost_classifier(self, fl_name=AdaBoostMdlFl):
+        self.__classifiers = []
+        try:
+            with open(fl_name, 'rb') as input_classifier:
+                while True:
+                    try:
+                        self.__classifiers.append(pickle.load(input_classifier))
+                    except EOFError:
+                        break
+
+        except Exception as e:
+            print("Error occurred while opening and reading file")
+            print(e)
+            traceback.print_exc()
 
 
 def process_training_data(fl_dir):
@@ -114,7 +196,7 @@ def process_training_data(fl_dir):
     # min_max_scalar = Utils.calculate_min_max_scalar(pd.read_csv(fl_dir))
 
     # replace labels
-    df['feature_class'].replace({'ASD': 1, 'TD': -1}, inplace=True)
+    df['feature_class'].replace({'ASD': 1.0, 'TD': -1.0}, inplace=True)
 
     X_train, X_test, y_train, y_test = Utils.train_test_split(df, 0.2)
 
@@ -155,5 +237,11 @@ class DecisionStump:
 
 
 if __name__ == "__main__":
-    adaboost = AdaBoostClassifier("D:/TrainingDataset_YEAR_PROJECT/TrainingSet_Saliency_2.csv", num_classifiers=10)
-    adaboost.train_adaboost()
+    adaboost = AdaBoostClassifier("D:/TrainingDataset_YEAR_PROJECT/TrainingSet.csv", num_classifiers=12)
+    adaboost.train_adaboost(save_classifiers=True)
+    # data = [[12, 2564, 213.666666666666, 29597, 2690.63636363636, 176.05935069273, 132.591777456996]]
+    # df = pd.DataFrame(data, columns=["fixpoint_count", "total_duration", "mean_duration", "total_scanpath_len",
+    #                                  "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord"])
+    #
+    # ret_val = adaboost.predict_sample_adaboost(df, True)
+    # print(ret_val)

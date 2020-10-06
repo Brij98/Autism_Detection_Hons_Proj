@@ -1,6 +1,10 @@
 import concurrent.futures
+import json
+import os
 import time
 import pickle
+import traceback
+
 import numpy as np
 import pandas as pd
 # from sklearn.metrics import confusion_matrix, classification_report
@@ -14,11 +18,9 @@ RandomForestMdlFile = "C:/Users/Brijesh Prajapati/Documents/Projects/Autism_Dete
 
 
 class RandomForest:
-    def __init__(self, num_trees=10, min_samples_split=2, max_depth=8, num_features=None):
-        self.num_tree = num_trees
-        self.__min_sample_split = min_samples_split
-        self.__max_depth = max_depth
-        self.__num_features = num_features
+    def __init__(self):
+        self.__num_tree = 10
+        self.__max_depth = 8
         self.__arr_trees = []
         self.__x_train = None
         self.__x_test = None
@@ -29,10 +31,16 @@ class RandomForest:
         # self.min_max_scalar = \
         #     Utils.calculate_min_max_scalar(pd.read_csv("D:/TrainingDataset_YEAR_PROJECT/TrainingSet.csv"))
 
-    def train_random_forest(self, training_data_dir, save_mdl=False):
+    def train_random_forest(self, x_train, x_test, y_train, y_test, save_mdl=False, save_loc=RandomForestMdlFile,
+                            num_trees=10,  max_depth=8):
+
+        # setting attributes
+        self.__num_tree = num_trees
+        self.__max_depth = max_depth
+
         print("Training Random Forest...")  # debug
 
-        self.__x_train, self.__x_test, self.__y_train, self.__y_test = process_training_data(training_data_dir)
+        self.__x_train, self.__x_test, self.__y_train, self.__y_test = x_train, x_test, y_train, y_test
 
         self.__arr_trees = []
         t0 = time.time()  # test purposes
@@ -48,9 +56,9 @@ class RandomForest:
 
         # thread pool approach
         with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
-            decision_trees = {executor.submit(trained_decision_tree, self.__min_sample_split,
-                                              self.__max_depth, self.__num_features, self.__x_train, self.__y_train): i
-                              for i in range(self.num_tree)}
+            decision_trees = {executor.submit(trained_decision_tree,
+                                              self.__max_depth, self.__x_train, self.__y_train): i
+                              for i in range(self.__num_tree)}
 
             for future in concurrent.futures.as_completed(decision_trees):
                 try:
@@ -63,8 +71,8 @@ class RandomForest:
 
         self.__test_random_forest()
 
-        if save_mdl is True:
-            self.__save_decision_trees()
+        if save_mdl:
+            self.__save_decision_trees(save_loc)
 
     # testing random forest classifier
     def __test_random_forest(self):
@@ -78,6 +86,24 @@ class RandomForest:
         print("Random Forest Confusion Matrix")
         print(cf[0])
         print(cf[1])
+
+        # write accuracy and confusion matrix to file
+
+        try:
+            report_fl_name = "C:/Users/Brijesh Prajapati/Documents/Projects/Autism_Detection_Hons_Proj/Classifiers/" \
+                             "Classifier_Reports/rf_current_report"
+
+            classifier_desc = "RF number of trees: " + str(self.__num_tree) + ", max depth: " + \
+                              str(self.__max_depth)
+            dict_report = {"desc": classifier_desc, "accuracy_score": str(accuracy_score),
+                           "tp": str(cf[0][0]), "fn": str(cf[0][1]),
+                           "fp": str(cf[1][0]), "tn": str(cf[1][1]),
+                           "specificity": str(cf[2][0]), "sensitivity": str(cf[2][1])}
+
+            with open(report_fl_name, 'w') as report_fl:
+                report_fl.write(json.dumps(dict_report))
+        except Exception as ex:
+            print("Exception occurred saving random forest report", ex)
 
     # given input features classify the features and return a decision
     def predict(self, x, return_lbl=False):
@@ -107,44 +133,61 @@ class RandomForest:
     # save the decision trees
     def __save_decision_trees(self, fl_name=RandomForestMdlFile):
         if self.__arr_trees is not None:
-            with open(fl_name, 'wb') as output:
-                for tree in self.__arr_trees:
-                    pickle.dump(tree, output, pickle.HIGHEST_PROTOCOL)
+            try:
+                os.remove(fl_name)
+                print("Deleted previous file")
+                with open(fl_name, 'wb') as output:
+                    for tree in self.__arr_trees:
+                        pickle.dump(tree, output, pickle.HIGHEST_PROTOCOL)
+            except Exception as ex:
+                print("Exception occurred saving decision tree", ex)
+                traceback.print_exc()
         else:
             print("Train the Random Forest Classifier before saving")
 
     # load the decision trees
-    # num_trees should be the same as the number of trees saved
-    def load_decision_trees(self, num_trees, fl_name=RandomForestMdlFile):
+    def load_decision_trees(self, fl_name=RandomForestMdlFile):
         self.__arr_trees = []
 
         try:
             with open(fl_name, 'rb') as input_tree:
-                for i in range(num_trees):
-                    self.__arr_trees.append(pickle.load(input_tree))
-
+                while True:
+                    try:
+                        self.__arr_trees.append(pickle.load(input_tree))
+                    except EOFError:
+                        break
         except Exception as e:
-            print("Error occurred while loading the decision trees", e)
+            print("Error occurred while opening and reading file")
+            print(e)
+            traceback.print_exc()
+
+        # try:
+        #     with open(fl_name, 'rb') as input_tree:
+        #         for i in range(num_trees):
+        #             self.__arr_trees.append(pickle.load(input_tree))
+        #
+        # except Exception as e:
+        #     print("Error occurred while loading the decision trees", e)
 
 
 # used for training a single decision tree.
-def trained_decision_tree(min_sample_split, max_depth, num_features, x, y):
+def trained_decision_tree(max_depth, x, y):
     # Create decision tree
     # print("Called trained_decision_tree")  # debug
-    dcsn_tree = DecisionTree(min_samples_split=min_sample_split, max_depth=max_depth, num_features=num_features)
-    x_sample, y_sample = bootstrap_samples(x, y)  # bootstrapping samples
+    dcsn_tree = DecisionTree(max_depth=max_depth)
+    x_sample, y_sample = Utils.bootstrap_samples(x, y)  # bootstrapping samples
     dcsn_tree.train_decision_tree(x_sample, y_sample)
 
     return dcsn_tree
 
 
 # bootstrapping samples
-def bootstrap_samples(x, y):
-    num_samples = x.shape[0]
-
-    # randomly select indices and allow for same index to occur more than once
-    indices = np.random.choice(num_samples, size=num_samples, replace=True)
-    return x[indices], y[indices]
+# def bootstrap_samples(x, y):
+#     num_samples = x.shape[0]
+#
+#     # randomly select indices and allow for same index to occur more than once
+#     indices = np.random.choice(num_samples, size=num_samples, replace=True)
+#     return x[indices], y[indices]
 
 
 # renaming feature labels to 1 and 0 and converting dataframe into a numpy array
@@ -155,7 +198,7 @@ def process_training_data(fl_dir):
     # min_max_scalar = Utils.calculate_min_max_scalar(pd.read_csv(fl_dir))
 
     # replace labels
-    df['feature_class'].replace({'ASD': 1, 'TD': 0}, inplace=True)
+    df['feature_class'].replace({'ASD': 1.0, 'TD': -1.0}, inplace=True)
 
     X_train, X_test, y_train, y_test = Utils.train_test_split(df, 0.2)
 
@@ -171,8 +214,9 @@ def process_training_data(fl_dir):
 
 
 if __name__ == '__main__':
-    rf = RandomForest(num_trees=12, max_depth=5)
-    rf.train_random_forest("D:/TrainingDataset_YEAR_PROJECT/TrainingSet_Saliency_2.csv")
+    rf = RandomForest()
+    # rf.train_random_forest("D:/TrainingDataset_YEAR_PROJECT/TrainingSet_Saliency_2.csv")
+    # rf.test_v2("D:/TrainingDataset_YEAR_PROJECT/TrainingSet_All.csv")
 
     # data = [[3, 192, 64, 5692, 2846, 55.5706155869889, 32.2860284249144]]
     # df = pd.DataFrame(data, columns=["fixpoint_count", "total_duration", "mean_duration", "total_scanpath_len",
