@@ -24,6 +24,8 @@ class AdaBoostClassifier:
     def train_adaboost(self, x_train, x_test, y_train, y_test, save_classifiers=False, save_loc=AdaBoostMdlFl,
                        num_classifiers=5):
 
+        print("Training Adaboost Classifier")   # debug
+
         self.__num_classifiers = num_classifiers
         self.__x_train, self.__x_test, self.__y_train, self.__y_test = x_train, x_test, y_train, y_test
 
@@ -58,7 +60,8 @@ class AdaBoostClassifier:
                     # with predictions
                     wrong_classifications = weights[self.__y_train != predictions]
 
-                    # calculating the error of wrongly classified weights
+                    # calculating the error of wrongly classified weights by summing the weights of the wrongly
+                    # classifier values
                     error_val = sum(wrong_classifications)
 
                     # flip error and polarity if error_val > 0.5
@@ -142,7 +145,7 @@ class AdaBoostClassifier:
 
         try:
             report_fl_name = "C:/Users/Brijesh Prajapati/Documents/Projects/Autism_Detection_Hons_Proj/Classifiers/" \
-                             "Classifier_Reports/adaboost_current_report"
+                             "Classifier_Reports/adaboost_current_report.json"
 
             classifier_desc = "Adaboost number of stumps: " + str(self.__num_classifiers)
             dict_report = {"desc": classifier_desc, "accuracy_score": str(accuracy_score),

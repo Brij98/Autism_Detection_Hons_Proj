@@ -84,7 +84,7 @@ class MultiLayerPerceptron:
 
         try:
             report_fl_name = "C:/Users/Brijesh Prajapati/Documents/Projects/Autism_Detection_Hons_Proj/Classifiers/" \
-                             "Classifier_Reports/mlp_current_report"
+                             "Classifier_Reports/mlp_current_report.json"
 
             classifier_desc = "MLP hidden_layer_size: " + str(self.__hidden_layer_size) + ", max_iteration: " + \
                               str(self.__max_iter)

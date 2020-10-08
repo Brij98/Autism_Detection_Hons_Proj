@@ -7,7 +7,8 @@ import traceback
 import numpy as np
 
 from Features.ScanpathFeatures import scanpath_feature_train, Scanpath_Feature_Names, scanpath_feature_test
-from Features.SaliencyFeatures import saliency_feature_train, Saliency_Feature_Names, Saliency_Feature_Names_Test
+from Features.SaliencyFeatures import saliency_feature_train, Saliency_Feature_Names, Saliency_Feature_Names_Test, \
+    saliency_feature_test
 
 
 # from Features import ScanpathFeatures
@@ -17,6 +18,7 @@ class Features:
         self.__scanpaths_dir = scanpaths_dir
         self.__images_dir = images_dir
 
+    # extracting only scan path features for training purpose
     def extract_scanpath_features_train(self, feature_class, dir_to_save):
         extracted_features = []
 
@@ -84,7 +86,7 @@ class Features:
                     for val in saliency_feat:
                         write_row.writerow(val)
 
-    # will extract both the saliency and scanpath features and save it to file
+    # will extract both the saliency and scanpath features and save it to file. for training purpose
     def extract_all_features(self, feature_class, dir_to_save):
         extracted_features = []
 
@@ -117,13 +119,20 @@ class Features:
                         write_row.writerow(val)
 
 
-# calculate the feature values for test data
+# calculate the Scanpath and Saliency feature values for test data
 def extract_features_test(scanpath_fl, image_fl):
-    feature_val_list = scanpath_feature_test(scanpath_fl, image_fl)
+    list_to_ret = []
+    salinecy_val_list = saliency_feature_test(scanpath_fl, image_fl)
 
-    return feature_val_list
+    scanpth_val_list = scanpath_feature_test(scanpath_fl, image_fl)
+
+    for feat_a, feat_b in zip(salinecy_val_list, scanpth_val_list):
+        list_to_ret.append(feat_a + feat_b)
+
+    return list_to_ret
 
 
+# helper methode that calculates the both the features for 1 text file. Used for training
 def calculate_all_features(scanpath_fl, image_fl, feat_class):
     list_to_ret = []
 
@@ -155,9 +164,12 @@ def key_func(x):
 
 
 if __name__ == "__main__":
-    label = "ASD"
+    label = "TD"
     feature = Features(scanpaths_dir="C:/Users/Brijesh Prajapati/Documents/Projects/TrainingDataset_YEAR_PROJECT/"
                                      "TrainingData_1/{}".format(label),
                        images_dir="C:/Users/Brijesh Prajapati/Documents/Projects/TrainingDataset_YEAR_PROJECT"
                                   "/TrainingData/Images")
-    feature.extract_saliency_feature_train(label, "D:/TrainingDataset_YEAR_PROJECT/TrainingSet_Saliency_3.csv")
+    # feature.extract_saliency_feature_train(label, "D:/TrainingDataset_YEAR_PROJECT/TrainingSet_Saliency_3.csv")
+    feature.extract_all_features(label, "C:/Users/Brijesh Prajapati/Documents/Projects/"
+                                        "Autism_Detection_Hons_Proj/Features/"
+                                        "Extracted_Feature_Files/TrainingSet_All_1.csv")

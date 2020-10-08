@@ -12,7 +12,9 @@ from Classifiers import Utils
 
 import pandas as pd
 
-Training_Data_Dir = "D:/TrainingDataset_YEAR_PROJECT/TrainingSet_All.csv"
+# Training_Data_Dir = "D:/TrainingDataset_YEAR_PROJECT/TrainingSet_All.csv"
+Training_Data_Dir = "C:/Users/Brijesh Prajapati/Documents/Projects/Autism_Detection_Hons_Proj/Features/" \
+                    "Extracted_Feature_Files/TrainingSet_All.csv"
 
 
 class MainClassifier:
@@ -93,24 +95,26 @@ class MainClassifier:
 
         self.__load_classifiers()
 
-        svm_p = self.svm.predict_sample(sample_data, True)
+        svm_p = self.svm.predict_sample(sample_data)
         print("SVM predicts: ", svm_p)
 
-        rf_p = self.random_forest.predict(sample_data, True)
+        rf_p = self.random_forest.predict(sample_data)
         print("random forest predicts: ", rf_p)
 
-        mlp_p = self.multi_layer_perceptron.predict(sample_data, True)
+        mlp_p = self.multi_layer_perceptron.predict(sample_data.to_numpy()[0])
         print("multi layer perceptron predicts: ", mlp_p)
 
-        adb_p = self.adaboost.predict_sample_adaboost(sample_data, True)
+        adb_p = self.adaboost.predict_sample_adaboost(sample_data)
+        print("adaboost predicts: ", adb_p)
 
-        predictions = [svm_p, rf_p, mlp_p, adb_p]
+        # predictions = [svm_p, rf_p, mlp_p, adb_p]
+        predictions = [float(svm_p), rf_p[0], mlp_p[0], adb_p[0]]
 
         dict_to_ret = {
-            "Support Vector Machine Prediction": svm_p,
-            "Random Forest Prediction": rf_p,
-            "Multi Layer Perceptron Prediction": mlp_p,
-            "AdaBoost Prediction": adb_p,
+            "Support Vector Machine Prediction": float(svm_p),
+            "Random Forest Prediction": rf_p[0],
+            "Multi Layer Perceptron Prediction": mlp_p[0],
+            "AdaBoost Prediction": adb_p[0],
             "Final Prediction": most_common_label(predictions)
         }
 
@@ -142,7 +146,7 @@ class MainClassifier:
 
         try:
             report_fl_name = "C:/Users/Brijesh Prajapati/Documents/Projects/Autism_Detection_Hons_Proj/Classifiers/" \
-                             "Classifier_Reports/mainmodel_current_report"
+                             "Classifier_Reports/mainmodel_current_report.json"
 
             classifier_desc = "Main Model"
             dict_report = {"desc": classifier_desc, "accuracy_score": str(accuracy_score),
@@ -173,12 +177,23 @@ def prepare_data_for_training(file_dir):
 if __name__ == "__main__":
     mc = MainClassifier()
     # mc.train_classifiers()
-    mc.test_main_classifier()
+    # mc.test_main_classifier()
 
     # data = [[3, 192, 64, 5692, 2846, 55.5706155869889, 32.2860284249144]]
     # data = [[12, 2564, 213.666666666666, 29597, 2690.63636363636, 176.05935069273, 132.591777456996]]
     # df = pd.DataFrame(data, columns=["fixpoint_count", "total_duration", "mean_duration", "total_scanpath_len",
     #                                  "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord"])
-    #
-    # prediction = mc.predict_sample(df)[1]
-    # print(prediction)
+    feature_values = [[105, 20, 20, 52.083333333333336, 625, 194999.0, 16249.916666666666, 147, 9.715030072847767,
+                       0.4139319990291013, 12, 3938.0, 328.1666666666667, 61168.0, 5097.333333333333,
+                       247.89632236438797, 214.19275070700743]]
+
+    df = pd.DataFrame(feature_values,
+                      columns=["first_saliency_fixation", "first_above_0.75_max_rank", "first_above_0.9_max_rank",
+                               "saliency_value_mean", "saliency_value_sum", "weighted_duration_sum",
+                               "weighted_duration_mean", "max_saliency_value", "relative_entropy",
+                               "normalized_saliency_scanpath",
+                               "fixpoint_count", "total_duration", "mean_duration", "total_scanpath_len",
+                               "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord"])
+
+    prediction = mc.predict_sample(df)[1]
+    print(prediction)

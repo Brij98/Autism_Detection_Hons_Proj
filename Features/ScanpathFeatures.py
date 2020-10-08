@@ -6,6 +6,9 @@ from Features.Feature_Utils import split_scanpaths
 Scanpath_Feature_Names = ["fixpoint_count", "total_duration", "mean_duration", "total_scanpath_len",
                           "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord", "feature_class"]
 
+Scanpath_Feature_Names_Test = ["fixpoint_count", "total_duration", "mean_duration", "total_scanpath_len",
+                          "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord"]
+
 
 # extracting scanpath feature from the text file
 def scanpath_feature_train(scanpath_fl, image_fl, feature_class=None):

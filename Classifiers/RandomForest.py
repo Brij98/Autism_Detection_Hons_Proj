@@ -91,7 +91,7 @@ class RandomForest:
 
         try:
             report_fl_name = "C:/Users/Brijesh Prajapati/Documents/Projects/Autism_Detection_Hons_Proj/Classifiers/" \
-                             "Classifier_Reports/rf_current_report"
+                             "Classifier_Reports/rf_current_report.json"
 
             classifier_desc = "RF number of trees: " + str(self.__num_tree) + ", max depth: " + \
                               str(self.__max_depth)

@@ -106,7 +106,7 @@ class SupportVectorMachine:
 
             try:
                 report_fl_name = "C:/Users/Brijesh Prajapati/Documents/Projects/Autism_Detection_Hons_Proj/Classifiers/" \
-                                 "Classifier_Reports/svm_current_report"
+                                 "Classifier_Reports/svm_current_report.json"
 
                 classifier_desc = "SVM l_r: " + str(Learning_rate) + ", r_s: " + str(Reg_strength)
                 dict_report = {"desc": classifier_desc, "accuracy_score": str(accuracy_score),
