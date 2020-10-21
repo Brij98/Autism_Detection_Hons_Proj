@@ -134,8 +134,11 @@ class RandomForest:
     def __save_decision_trees(self, fl_name=RandomForestMdlFile):
         if self.__arr_trees is not None:
             try:
-                os.remove(fl_name)
-                print("Deleted previous file")
+                try:
+                    os.remove(fl_name)
+                    print("Deleted previous file")
+                except Exception as ex:
+                    pass
                 with open(fl_name, 'wb') as output:
                     for tree in self.__arr_trees:
                         pickle.dump(tree, output, pickle.HIGHEST_PROTOCOL)

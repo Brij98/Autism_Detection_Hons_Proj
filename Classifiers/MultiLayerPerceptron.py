@@ -115,8 +115,11 @@ class MultiLayerPerceptron:
 
     def __save_MultiLayerPerceptron(self, fl_loc=MultilayerPerceptronMdlFl):
         try:
-            os.remove(fl_loc)
-            print("Deleted previous file")
+            try:
+                os.remove(fl_loc)
+                print("Deleted previous file")
+            except Exception as ex:
+                pass
             joblib.dump(self.__mlp_classifier, fl_loc)
         except Exception as e:
             print("Error saving MultiLayerPerceptron Model", e)

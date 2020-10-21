@@ -100,7 +100,7 @@ def classify():
                                    "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord"])
 
         feat_dict = df.to_dict(orient='index')[0]
-        print("dict", dict)
+        print("dict", feat_dict)
 
         classification_dict, prediction = classifier.predict_sample(df)
 

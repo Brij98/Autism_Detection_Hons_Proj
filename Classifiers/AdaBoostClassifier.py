@@ -161,8 +161,11 @@ class AdaBoostClassifier:
     def __save_adaboost_classifiers(self, fl_name=AdaBoostMdlFl):
         if self.__classifiers is not None:
             try:
-                os.remove(fl_name)
-                print("Deleted previous file")
+                try:
+                    os.remove(fl_name)
+                    print("Deleted previous file")
+                except Exception as ex:
+                    pass
                 with open(fl_name, 'wb') as output:
                     for classifier in self.__classifiers:
                         pickle.dump(classifier, output, pickle.HIGHEST_PROTOCOL)
