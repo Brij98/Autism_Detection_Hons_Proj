@@ -108,10 +108,10 @@ class MainClassifier:
         print("adaboost predicts: ", adb_p)
 
         # predictions = [svm_p, rf_p, mlp_p, adb_p]
-        predictions = [float(svm_p), rf_p[0], mlp_p[0], adb_p[0]]
+        predictions = [float(svm_p[0]), rf_p[0], mlp_p[0], adb_p[0]]
 
         dict_to_ret = {
-            "Support Vector Machine Prediction": float(svm_p),
+            "Support Vector Machine Prediction": float(svm_p[0]),
             "Random Forest Prediction": rf_p[0],
             "Multi Layer Perceptron Prediction": mlp_p[0],
             "AdaBoost Prediction": adb_p[0],
