@@ -32,7 +32,7 @@ class RandomForest:
         #     Utils.calculate_min_max_scalar(pd.read_csv("D:/TrainingDataset_YEAR_PROJECT/TrainingSet.csv"))
 
     def train_random_forest(self, x_train, x_test, y_train, y_test, save_mdl=False, save_loc=RandomForestMdlFile,
-                            num_trees=10,  max_depth=8):
+                            num_trees=12,  max_depth=8):
 
         # setting attributes
         self.__num_tree = num_trees

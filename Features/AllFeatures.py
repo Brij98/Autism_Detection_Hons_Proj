@@ -172,4 +172,4 @@ if __name__ == "__main__":
     # feature.extract_saliency_feature_train(label, "D:/TrainingDataset_YEAR_PROJECT/TrainingSet_Saliency_3.csv")
     feature.extract_all_features(label, "C:/Users/Brijesh Prajapati/Documents/Projects/"
                                         "Autism_Detection_Hons_Proj/Features/"
-                                        "Extracted_Feature_Files/TrainingSet_All_1.csv")
+                                        "Extracted_Feature_Files/TrainingSet_All.csv")

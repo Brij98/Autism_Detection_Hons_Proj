@@ -22,7 +22,7 @@ class AdaBoostClassifier:
         self.__y_test = None
 
     def train_adaboost(self, x_train, x_test, y_train, y_test, save_classifiers=False, save_loc=AdaBoostMdlFl,
-                       num_classifiers=5):
+                       num_classifiers=12):
 
         print("Training Adaboost Classifier")   # debug
 

@@ -9,6 +9,12 @@ Scanpath_Feature_Names = ["fixpoint_count", "total_duration", "mean_duration", "
 Scanpath_Feature_Names_Test = ["fixpoint_count", "total_duration", "mean_duration", "total_scanpath_len",
                           "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord"]
 
+# Scanpath_Feature_Names = ["fixpoint_count", "mean_duration", "total_scanpath_len",
+#                           "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord", "feature_class"]
+#
+# Scanpath_Feature_Names_Test = ["fixpoint_count", "mean_duration", "total_scanpath_len",
+#                           "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord"]
+
 
 # extracting scanpath feature from the text file
 def scanpath_feature_train(scanpath_fl, image_fl, feature_class=None):
@@ -110,17 +116,6 @@ def calculate_scan_path_features(scan_path_list, image_size, feature_class=None)
         feature_val_list.append(feature_val)
 
     return feature_val_list
-
-#  splitting scanpaths into list
-# def split_scanpaths(scanpath_fl):
-#     scanpaths = np.genfromtxt(scanpath_fl, names=True, case_sensitive='lower', delimiter=',', dtype=np.float)
-#     scanpath_start = np.where(scanpaths['idx'] == 0)[0]
-#     scanpath_end = np.append(scanpath_start[1:], len(scanpaths))
-#     ret_arr = []
-#     for i, j in zip(scanpath_start, scanpath_end):
-#         ret_arr.append(scanpaths[i:j])
-#
-#     return ret_arr
 
 # References:
 #   "Classifying Autism Spectrum Disorder Based on Scanpaths and Saliency", IEEE, Author: Mikhail Startsev, Micheal Dorr

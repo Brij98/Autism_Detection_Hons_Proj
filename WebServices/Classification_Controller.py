@@ -1,23 +1,27 @@
 import json
 import os
-import random
 import traceback
 
 import cv2
 import pandas as pd
-from flask import Flask, request, Blueprint, jsonify, send_file
-
-from Features.AllFeatures import extract_features_test
-from Features.SaliencyFeatures import Saliency_Feature_Names_Test
-from Features.ScanpathFeatures import Scanpath_Feature_Names_Test
-from Features.SaliencyFeatures import compute_saliency_map
+from flask import request, Blueprint, jsonify, send_file
 
 from Classifiers.MainClassifier import MainClassifier
+from Features.AllFeatures import extract_features_test
+from Features.SaliencyFeatures import compute_saliency_map
 
 classify_samples_bp = Blueprint('classify_samples', __name__)
 
 # data_file_dir = '../ReceivedData'
 data_file_dir = "C:/Users/Brijesh Prajapati/Documents/Projects/Autism_Detection_Hons_Proj/ReceivedData/"
+
+weights_dict = {
+    "Support Vector Machine Prediction": 1.0,
+    "Random Forest Prediction": 1.0,
+    "Multi Layer Perceptron Prediction": 1.0,
+    "AdaBoost Prediction": 1.0,
+    "Final Prediction": 1.0
+}
 
 
 @classify_samples_bp.route("/classification_service")
@@ -109,6 +113,7 @@ def classify():
         list_to_ret = list()
         list_to_ret.append(classification_dict)
         list_to_ret.append(feat_dict)
+        list_to_ret.append(weights_dict)
 
         try:
             os.remove(filename_1)

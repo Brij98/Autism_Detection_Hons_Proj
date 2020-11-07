@@ -23,8 +23,9 @@ def sal_test_map(img_path, ASD, TD):
     saliency = cv2.saliency.StaticSaliencySpectralResidual_create()
 
     success, saliency_map = saliency.computeSaliency(input_img)
+
     saliency_map = (saliency_map * 255).astype("uint8")
-    saliency_map_1 = cv2.GaussianBlur(saliency_map, (109, 109), 18)
+    saliency_map_1 = cv2.GaussianBlur(saliency_map, (91, 91), 15)
 
     cv2.imshow("Original Image", input_img)
     cv2.imshow("Saliency Map", saliency_map)
@@ -39,7 +40,7 @@ def compute_saliency_map(input_img):
 
     success, saliency_map = saliency.computeSaliency(input_img)
     saliency_map = (saliency_map * 255).astype("uint8")
-    saliency_map = cv2.GaussianBlur(saliency_map, (109, 109), 18)
+    saliency_map = cv2.GaussianBlur(saliency_map, (91, 91), 15)
 
     return saliency_map
 
@@ -50,19 +51,10 @@ def saliency_feature_train(scanpath_fl, image_fl, feature_class=None):
 
     image_size = input_img.shape[:2]
 
-    # saliency map from the dir
-    # file_name = os.path.splitext(os.path.basename(image_fl))[0]
-    #
-    # pred_saliency_map = cv2.imread(
-    #     "C:/Users/Brijesh Prajapati/Documents/Projects/TrainingDataset_YEAR_PROJECT/TrainingData/"
-    #     "ASD_FixMaps/" + file_name + "_s.png")
-    # pred_saliency_map = cv2.cvtColor(pred_saliency_map, cv2.COLOR_BGR2GRAY)
-    # pred_saliency_map = (pred_saliency_map * 255).astype("uint8")
-
     scanpath_lst = split_scanpaths(scanpath_fl=scanpath_fl)
 
     pred_saliency_map = compute_saliency_map(input_img)
-    # print("Sal Map", pred_saliency_map.shape)
+    # print("Sal Map", pred_saliency_map.shape) # debug
 
     feature_val_list = calculate_saliency_features(scanpath_lst, image_size, pred_saliency_map, feature_class)
 
@@ -102,6 +94,7 @@ def calculate_saliency_features(scanpath_list, image_size, predicted_saliency_ma
 
         # print(type(actual_saliency_map))     # debug
         # print(type(scanpath))  # debug
+
         for coordinate in scanpath:
             # print(coordinate[1])  # debug
             actual_saliency_map[int(coordinate[2]) - 1, int(coordinate[1]) - 1] = 1
@@ -109,7 +102,8 @@ def calculate_saliency_features(scanpath_list, image_size, predicted_saliency_ma
             saliency_values.append(predicted_saliency_map_cpy[int(coordinate[2]) - 1,
                                                               int(coordinate[1]) - 1])
 
-        actual_saliency_map = cv2.GaussianBlur(actual_saliency_map, (3, 3), 0.5)  # applying gaussian blur
+        #   actual_saliency_map = cv2.GaussianBlur(actual_saliency_map, (3, 3), 0.5)  # applying gaussian blur
+        actual_saliency_map = cv2.GaussianBlur(actual_saliency_map, (109, 109), 18)  # applying gaussian blur
 
         # value of the first fixation on the predicted saliency map
         feature_val_name.append("first_saliency_fixation")
@@ -170,11 +164,6 @@ def calculate_saliency_features(scanpath_list, image_size, predicted_saliency_ma
         if std_deviation != 0:
             predicted_saliency_map_cpy /= std_deviation
 
-        # sal_val = []
-        # for coordinate in scanpath:
-        #     sal_val.append(predicted_saliency_map_cpy[coordinate['y'].astype('int') - 1,
-        #                                               coordinate['x'].astype('int') - 1])
-
         feature_val_name.append("normalized_saliency_scanpath")
         feature_val.append(np.mean(predicted_saliency_map_cpy[scanpath['y'].astype('int') - 1,
                                                               scanpath['x'].astype('int') - 1]))
@@ -197,4 +186,5 @@ if __name__ == "__main__":
                  "/TD_FixMaps/7_s.png")
 
 # References:
-#   "Classifying Autism Spectrum Disorder Based on Scanpaths and Saliency", IEEE, Author: Mikhail Startsev, Micheal Dorr
+#   "Classifying Autism Spectrum Disorder Based on Scanpaths and Saliency", IEEE, Author: Mikhail Startsev,
+#   Micheal Dorr"

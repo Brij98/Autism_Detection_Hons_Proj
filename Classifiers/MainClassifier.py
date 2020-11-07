@@ -20,7 +20,7 @@ Training_Data_Dir = "C:/Users/Brijesh Prajapati/Documents/Projects/Autism_Detect
 class MainClassifier:
     def __init__(self):
         # checking if the models are trained/ or are loaded
-        self.__models_loaded = False
+        self.__models_loaded = True
 
         # SVM
         self.svm = SupportVectorMachine(Training_Data_Dir)
@@ -42,10 +42,12 @@ class MainClassifier:
 
         self.__x_train, self.__x_test, self.__y_train, self.__y_test = prepare_data_for_training(Training_Data_Dir)
 
+        save_mdl = True
+
         # ******************************************************************************Setting Up SVM for training
         x_temp, y_temp = Utils.bootstrap_samples(self.__x_train, self.__y_train)  # bootstrap samples
         if svm_param_dict is not None:
-            self.svm.train_support_vector_machine(x_temp, self.__x_test, y_temp, self.__y_test, save_mdl=True,
+            self.svm.train_support_vector_machine(x_temp, self.__x_test, y_temp, self.__y_test, save_mdl=save_mdl,
                                                   **svm_param_dict)
         else:
             self.svm.train_support_vector_machine(x_temp, self.__x_test, y_temp, self.__y_test)
@@ -53,31 +55,31 @@ class MainClassifier:
         # ******************************************************************************Setting Up RF for training
         x_temp, y_temp = Utils.bootstrap_samples(self.__x_train, self.__y_train)  # bootstrap samples
         if rf_param_dict is not None:
-            self.random_forest.train_random_forest(x_temp, self.__x_test, y_temp, self.__y_test, save_mdl=True,
+            self.random_forest.train_random_forest(x_temp, self.__x_test, y_temp, self.__y_test, save_mdl=save_mdl,
                                                    **rf_param_dict)
         else:
-            self.random_forest.train_random_forest(x_temp, self.__x_test, y_temp, self.__y_test, save_mdl=True)
+            self.random_forest.train_random_forest(x_temp, self.__x_test, y_temp, self.__y_test, save_mdl=save_mdl)
 
         # ******************************************************************************Setting Up MLP for training
         x_temp, y_temp = Utils.bootstrap_samples(self.__x_train, self.__y_train)
         if mlp_param_dict is not None:
             self.multi_layer_perceptron.train_MultiLayerPerceptron(x_temp, self.__x_test, y_temp, self.__y_test,
-                                                                   save_mdl=True, **mlp_param_dict)
+                                                                   save_mdl=save_mdl, **mlp_param_dict)
         else:
             self.multi_layer_perceptron.train_MultiLayerPerceptron(x_temp, self.__x_test, y_temp, self.__y_test,
-                                                                   save_mdl=True)
+                                                                   save_mdl=save_mdl)
 
         # ******************************************************************************Setting Up Adaboost for training
         x_temp, y_temp = Utils.bootstrap_samples(self.__x_train, self.__y_train)
         if adab_param_dict is not None:
-            self.adaboost.train_adaboost(x_temp, self.__x_test, y_temp, self.__y_test, save_classifiers=True,
+            self.adaboost.train_adaboost(x_temp, self.__x_test, y_temp, self.__y_test, save_classifiers=save_mdl,
                                          **adab_param_dict)
         else:
-            self.adaboost.train_adaboost(x_temp, self.__x_test, y_temp, self.__y_test, save_classifiers=True)
+            self.adaboost.train_adaboost(x_temp, self.__x_test, y_temp, self.__y_test, save_classifiers=save_mdl)
 
         # self.__models_loaded = True
 
-        self.test_main_classifier()
+        # self.test_main_classifier()
 
         return 0
 
@@ -96,7 +98,7 @@ class MainClassifier:
         self.__load_classifiers()
 
         svm_p = self.svm.predict_sample(sample_data)
-        print("SVM predicts: ", svm_p)
+        print("SVM predicts: ", float(svm_p[0]))
 
         rf_p = self.random_forest.predict(sample_data)
         print("random forest predicts: ", rf_p)
@@ -111,7 +113,7 @@ class MainClassifier:
         predictions = [float(svm_p[0]), rf_p[0], mlp_p[0], adb_p[0]]
 
         dict_to_ret = {
-            "Support Vector Machine Prediction": float(svm_p[0]),
+            "Support Vector Machine Prediction": float(svm_p),
             "Random Forest Prediction": rf_p[0],
             "Multi Layer Perceptron Prediction": mlp_p[0],
             "AdaBoost Prediction": adb_p[0],
@@ -177,7 +179,7 @@ def prepare_data_for_training(file_dir):
 if __name__ == "__main__":
     mc = MainClassifier()
     # mc.train_classifiers()
-    # mc.test_main_classifier()
+    mc.test_main_classifier()
 
     # data = [[3, 192, 64, 5692, 2846, 55.5706155869889, 32.2860284249144]]
     # data = [[12, 2564, 213.666666666666, 29597, 2690.63636363636, 176.05935069273, 132.591777456996]]
