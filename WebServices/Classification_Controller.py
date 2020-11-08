@@ -16,11 +16,10 @@ classify_samples_bp = Blueprint('classify_samples', __name__)
 data_file_dir = "C:/Users/Brijesh Prajapati/Documents/Projects/Autism_Detection_Hons_Proj/ReceivedData/"
 
 weights_dict = {
-    "Support Vector Machine Prediction": 1.0,
-    "Random Forest Prediction": 1.0,
-    "Multi Layer Perceptron Prediction": 1.0,
-    "AdaBoost Prediction": 1.0,
-    "Final Prediction": 1.0
+    "SVM_weight": 1.0,
+    "RF_weight": 1.0,
+    "MLP_weight": 1.0,
+    "ADB_weight": 1.0,
 }
 
 
@@ -106,7 +105,7 @@ def classify():
         feat_dict = df.to_dict(orient='index')[0]
         print("dict", feat_dict)
 
-        classification_dict, prediction = classifier.predict_sample(df)
+        classification_dict, prediction = classifier.predict_sample(df, weights_dict)
 
         print(prediction)
 
@@ -182,6 +181,22 @@ def get_feature_values():
             os.remove(filename_1)
         except FileNotFoundError as ex:
             pass
+        return json.dumps({'server error': 'error occurred classifying'}), 500, {'ContentType': 'application/json'}
+
+
+@classify_samples_bp.route('update_classifier_weights/', methods=['POST'])
+def update_classifier_weights():
+    try:
+        # print(request.json)
+        recived_dict = request.json
+        for i in recived_dict:
+            weights_dict[i['Key']] = i['Value']
+
+        # for j in weights_dict:
+        #     print(j)    # debug
+
+        return "Data Received", 200
+    except Exception as ex:
         return json.dumps({'server error': 'error occurred classifying'}), 500, {'ContentType': 'application/json'}
 
 # if __name__ == "__main__":

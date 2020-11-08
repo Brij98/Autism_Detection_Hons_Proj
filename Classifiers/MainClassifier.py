@@ -91,14 +91,13 @@ class MainClassifier:
 
         # self.__models_loaded = True
 
-    def predict_sample(self, sample_data):
-        # if self.__models_loaded is False:
-        #     self.__load_classifiers()
+    def predict_sample(self, sample_data, classifier_weights=None):
+        min_threshold = 0.9
 
         self.__load_classifiers()
 
         svm_p = self.svm.predict_sample(sample_data)
-        print("SVM predicts: ", float(svm_p[0]))
+        print("SVM predicts: ", float(svm_p))
 
         rf_p = self.random_forest.predict(sample_data)
         print("random forest predicts: ", rf_p)
@@ -109,8 +108,21 @@ class MainClassifier:
         adb_p = self.adaboost.predict_sample_adaboost(sample_data)
         print("adaboost predicts: ", adb_p)
 
-        # predictions = [svm_p, rf_p, mlp_p, adb_p]
-        predictions = [float(svm_p[0]), rf_p[0], mlp_p[0], adb_p[0]]
+        predictions = []
+
+        if classifier_weights.get("SVM_weight") > min_threshold:
+            predictions.append(float(svm_p))
+
+        if classifier_weights.get("RF_weight") > min_threshold:
+            predictions.append(rf_p[0])
+
+        if classifier_weights.get("MLP_weight") > min_threshold:
+            predictions.append(mlp_p[0])
+
+        if classifier_weights.get("ADB_weight") > min_threshold:
+            predictions.append(adb_p[0])
+
+        # predictions = [float(svm_p), rf_p[0], mlp_p[0], adb_p[0]]
 
         dict_to_ret = {
             "Support Vector Machine Prediction": float(svm_p),

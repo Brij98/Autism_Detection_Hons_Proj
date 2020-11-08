@@ -80,6 +80,7 @@ class AdaBoostClassifier:
             EPS = 1e-10
             classifier.alpha_val = 0.5 * np.log((1 - min_error_val) / (min_error_val + EPS))
 
+            # number of samples that the weak classifier correctly/incorrectly classifies
             predictions = classifier.predict(self.__x_train)
 
             # updating weights. new weights =(prev weight exp(-alpha * label * predictions)) / sum(weights)
@@ -223,7 +224,7 @@ class DecisionStump:
         self.polarity = 1  # is used to change '>' '<' signs
         self.feature_idx = None
         self.split_threshold = None
-        self.alpha_val = None
+        self.alpha_val = None   # measures the accuracy/performance of the classifier
 
     # accepts the sample set to predict
     def predict(self, x):
