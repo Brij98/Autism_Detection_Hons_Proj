@@ -193,6 +193,10 @@ def stochastic_gradient_descent(features, labels, max_epochs=17000, cost_thresh=
     count = 0
 
     for epoch in range(1, max_epochs):
+
+        # to ensure that each data point creates an independent change on the model
+        # without being biased by the same points before them
+        # to keep the learning general
         X, Y = shuffle_data(features=features, labels=labels)
         for indx, x in enumerate(X):
             ascent = calculate_cost_gradient(w=weights, x=x, y=Y[indx])

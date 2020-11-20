@@ -197,17 +197,17 @@ if __name__ == "__main__":
     # data = [[12, 2564, 213.666666666666, 29597, 2690.63636363636, 176.05935069273, 132.591777456996]]
     # df = pd.DataFrame(data, columns=["fixpoint_count", "total_duration", "mean_duration", "total_scanpath_len",
     #                                  "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord"])
-    feature_values = [[105, 20, 20, 52.083333333333336, 625, 194999.0, 16249.916666666666, 147, 9.715030072847767,
-                       0.4139319990291013, 12, 3938.0, 328.1666666666667, 61168.0, 5097.333333333333,
-                       247.89632236438797, 214.19275070700743]]
-
-    df = pd.DataFrame(feature_values,
-                      columns=["first_saliency_fixation", "first_above_0.75_max_rank", "first_above_0.9_max_rank",
-                               "saliency_value_mean", "saliency_value_sum", "weighted_duration_sum",
-                               "weighted_duration_mean", "max_saliency_value", "relative_entropy",
-                               "normalized_saliency_scanpath",
-                               "fixpoint_count", "total_duration", "mean_duration", "total_scanpath_len",
-                               "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord"])
-
-    prediction = mc.predict_sample(df)[1]
-    print(prediction)
+    # feature_values = [[105, 20, 20, 52.083333333333336, 625, 194999.0, 16249.916666666666, 147, 9.715030072847767,
+    #                    0.4139319990291013, 12, 3938.0, 328.1666666666667, 61168.0, 5097.333333333333,
+    #                    247.89632236438797, 214.19275070700743]]
+    #
+    # df = pd.DataFrame(feature_values,
+    #                   columns=["first_saliency_fixation", "first_above_0.75_max_rank", "first_above_0.9_max_rank",
+    #                            "saliency_value_mean", "saliency_value_sum", "weighted_duration_sum",
+    #                            "weighted_duration_mean", "max_saliency_value", "relative_entropy",
+    #                            "normalized_saliency_scanpath",
+    #                            "fixpoint_count", "total_duration", "mean_duration", "total_scanpath_len",
+    #                            "mean_scanpath_len", "mean_dist_centre", "mean_dist_mean_coord"])
+    #
+    # prediction = mc.predict_sample(df)[1]
+    # print(prediction)
