@@ -1,4 +1,4 @@
-# Detecting ASD from Eye-tracking data using Ensemble Learning
+# Diagnosing Autism Using Eye-Tracking Data and Ensemble Learning
 
 ## Description
 This project uses eye-tracking data set collected from https://zenodo.org/record/2647418#.X1YnuXkzZPY to diagnose children around the age of eight using ensemble learning.
