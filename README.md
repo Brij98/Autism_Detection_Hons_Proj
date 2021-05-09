@@ -5,3 +5,4 @@ This project uses eye-tracking data set collected from https://zenodo.org/record
 The program extracts scanpath and saliency features from the eye-tracking data and the image that was used to collect the eye-tracking data.
 From the extracted features an ensemble of machine learning algorithims are trained and tested.
 The final classification is conducted based on majority votes from the different trained models.
+Project screen recording is available on the follwing link https://youtu.be/UouELmDBZHw
